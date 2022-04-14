@@ -20,12 +20,12 @@ Route::get('/', function () {
     ]);
 })->withoutMiddleware('auth:api');
 
-Route::controller(AuthController::class)->prefix('auth')->withoutMiddleware('auth:api')->group(function() {
-    Route::post('/', 'login');
-    Route::post('/register', 'store');
+Route::controller(AuthController::class)->group(function() {
+    Route::post('/login', 'login')->withoutMiddleware('auth:api');
+    Route::post('/register', 'store')->withoutMiddleware('auth:api');
     Route::get('/logout', 'logout');
 });
 
-Route::controller(UserController::class)->prefix('user')->group(function() {
+Route::controller(UserController::class)->prefix('users')->group(function() {
     Route::get('/me', 'me');
 });

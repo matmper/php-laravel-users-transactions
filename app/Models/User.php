@@ -44,7 +44,7 @@ class User extends Model implements Authenticatable, JWTSubject
 	protected $table = 'users';
 
 	protected $casts = [
-		'status' => 'int'
+
 	];
 
 	protected $hidden = [
@@ -56,14 +56,9 @@ class User extends Model implements Authenticatable, JWTSubject
 		'name',
 		'email',
 		'document_number',
-		'status',
+		'type',
 		'password'
 	];
-
-	public function users_logs()
-	{
-		return $this->hasMany(UsersLog::class);
-	}
 
 	/**
      * Get the identifier that will be stored in the subject claim of the JWT.

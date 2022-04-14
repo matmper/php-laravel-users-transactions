@@ -14,17 +14,13 @@ class LoginRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'email' => ['nullable', 'email', 'max:150', 'required_without:documentNumber'],
             'documentNumber' => [
-                'nullable',
+                'required',
                 'string',
                 'min:11',
-                'max:21',
-                'document_number:both',
-                'required_without:email'
+                'max:14'
             ],
-            'password' => ['required', 'min:6'],
-            'companyPublicId' => ['nullable', 'string', 'min:36', 'max:36']
+            'password' => ['required', 'min:6']
         ];
     }
 }

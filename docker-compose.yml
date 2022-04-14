@@ -3,59 +3,63 @@ version: '3.8'
 services:
 
     #PHP 8 Service
-    php-fpm:
+    webapp:
         container_name: ut-php-8
-        image: php:8-fpm
         build:
+            args:
+                user: 0 # $ echo $USER
+                uid: 501 # $ id -u
             context: .
-            dockerfile: Dockerfile
+            dockerfile: ./Dockerfile
+        working_dir: /var/www/
         volumes:
-            - ./:/var/www/html
-        working_dir: /var/www/html/
+            - ./:/var/www
         networks:
             - phpnet
         depends_on:
-            - mysql
-            - nginx
+            - mysqlapp
+        ports:
+            - "9000:9000"
         links:
-            - nginx
-            - mysql
+            - nginxapp
+            - mysqlapp
         restart: unless-stopped
     
     #Nginx Service
-    nginx:
+    nginxapp:
         container_name: ut-nginx
         image: nginx:latest
-        hostname: userstransactions.local
         ports:
-              - "80:80"
+                - "8080:80"
         volumes:
-            - ./docker/default.conf:/etc/nginx/conf.d/default.conf
+            - ./:/var/www
+            - ./docker/default.conf:/etc/nginx/conf.d/site.conf
         networks:
-              - phpnet
+                - phpnet
         links:
-            - mysql
+            - mysqlapp
         restart: unless-stopped
     
     # DB - MySQL 5.7
-    mysql:
+    mysqlapp:
         container_name: ut-mysql-57
         image: mysql:5.7
         platform: linux/x86_64
-        env_file:
-            - .env
         environment:
-            MYSQL_PORT: ${DB_PORT}
-            MYSQL_ROOT_PASSWORD: ${DB_USERNAME}
-            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_PORT: 3306
+            MYSQL_ROOT_PASSWORD: pass123
+            MYSQL_DATABASE: userstransactions
+            MYSQL_USER: user
+            MYSQL_PASSWORD: pass123
         command:
             - --explicit_defaults_for_timestamp
             - --default-authentication-plugin=mysql_native_password
         volumes:
-            - ./mysql/data:/var/lib/mysql
-            - ./docker/mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql
+            - ./docker/volumes/mysql/data:/var/lib/mysql
+            #- ./docker/mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql:ro
+            #- ./docker/my.cnf:/etc/mysql/my.cnf
         ports:
-            - "${DB_PORT}:${DB_PORT}"
+            - "3306:3306"
         networks:
             - phpnet
         restart: unless-stopped

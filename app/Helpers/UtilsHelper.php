@@ -10,8 +10,8 @@ class UtilsHelper
      * @param string|integer|float $value
      * @return string
      */
-    public function onlyNumbers(string|int|float $value): string
+    public static function onlyNumbers(string|int|float $value): string
     {
-        return $value;
+        return (string) preg_replace("/[^0-9]/", "", $value);
     }
 }

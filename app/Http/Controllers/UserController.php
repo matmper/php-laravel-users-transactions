@@ -15,8 +15,7 @@ class UserController extends Controller
             true,
             'online',
             [
-                'user' => auth()->user(),
-                'role' => 1
+                'user' => auth()->user()
             ],
             200
         );

@@ -10,24 +10,25 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    public function __construct(private UserRepository $userRepository) {
+    public function __construct(private UserRepository $userRepository)
+    {
     }
 
     /**
      * Realiza o login e cria sessão de um novo usuário
      *
+     * @param LoginRequest $request
      * @return object
      */
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request): object
     {
-        $credentials = $request->documentNumber
-            ? ['document_number' => onlyNumbers($request->documentNumber)]
-            : ['email' => $request->email];
+        $token = Auth::attempt([
+            'document_number' => \App\Helpers\UtilsHelper::onlyNumbers($request->documentNumber),
+            'password' => $request->password
+        ]);
 
-        $credentials['password'] = $request->password;
-
-        if (!$token = Auth::attempt($credentials)) {
-            return $this->resp(false, 'usuário ou senha inválido', statusCode:401);
+        if (empty($token)) {
+            throw new \Exception('document number or password is invalid', 401);
         }
 
         $jwt = [
@@ -42,16 +43,18 @@ class AuthController extends Controller
     /**
      * Realiza o cadastro de um novo usuário
      *
+     * @param StoreRequest $request
      * @return object
      */
-    public function store(StoreRequest $request)
+    public function store(StoreRequest $request): object
     {
         $user = $this->userRepository->insert([
             'public_id' => \Illuminate\Support\Str::uuid()->toString(),
             'name' => ucwords($request->name),
             'email' => strtolower($request->email),
-            'document_number' => onlyNumbers($request->documentNumber),
-            'password' => Hash::make($request->password)
+            'document_number' => \App\Helpers\UtilsHelper::onlyNumbers($request->documentNumber),
+            'password' => Hash::make($request->password),
+            'type' => $request->type
         ]);
 
         if (empty($user)) {
@@ -72,6 +75,6 @@ class AuthController extends Controller
             return $this->resp(true, 'sessão encerrada com sucesso');
         }
 
-        return $this->resp(false, 'houve um erro ao encerrar sessão');
+        throw new \Exception('houve um erro ao encerrar sessão', 500);
     }
 }
