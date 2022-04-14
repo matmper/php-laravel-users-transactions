@@ -18,17 +18,17 @@ class StoreRequest extends BaseRequest
 
         return [
             'name' => ['required', 'string', 'min:1', 'max:75'],
-            'email' => ['required', 'email', 'unique:users,email', 'max:150'],
             'documentNumber' => [
                 'required',
                 'string',
                 'min:11',
-                'max:21',
+                'max:14',
                 'unique:users,document_number',
                 'document_number:both'
             ],
+            'email' => ['required', 'email', 'unique:users,email', 'max:150'],
             'password' => ['required', 'min:6'],
-            'companyPublicId' => ['nullable', 'string', 'min:36', 'max:36']
+            'type' => ['required', 'in:normal,store']
         ];
     }
 }

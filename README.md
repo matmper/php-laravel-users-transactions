@@ -9,34 +9,53 @@
     </a>
 </p>
 
-## Configure
-
-### Database
-- **Version:** MySQL 5.7
-- **Name:** userstransactions
-- **Migration:** [Laravel Migration](https://laravel.com/docs/9.x/migrations)
----
-### Back-end
-- **Host:** userstransactions.local
-- **PHP:** ^8.0.2
----
 ### Install & Requeriments
 #### Requeriments
-- Laravel 9.x Requeriments https://lumen.laravel.com/docs/5.8
-- PHP ^8.0.2
-- MySQL 5.7
-- Composer && php artisan installed
---
+- Laravel 9.x Requeriments
+- Docker Installed
+---
 #### Install
 - Clone this repository on a clean folder: [Github](https://github.com/matmper/php-laravel-users-transactions)
-- Run your docker
-- Run this command: `docker-compose up`
-#### Routes
+- Execute your docker
+- Run this commands: 
+```base
+$ docker-compose up
+$ docker-compose exec webapp cp .env.example .env 
+$ docker-compose exec webapp composer install 
+$ docker-compose exec webapp php artisan key:generate 
+$ docker-compose exec webapp php artisan jwt:secret
+$ docker-compose exec webapp php artisan migrate
+```
 ---
-- Use the `./routes/collection.js` to use the routes documentation
+## Documentation
+- Routes (Postman): [show collection](https://documenter.getpostman.com/view/8724744/Uyr4LL6b)
+- Flowchart (Wiki): [click](https://github.com/matmper/php-laravel-users-transactions/wiki/Fluxograma)
+
+---
+## Auth (development)
+In development envrioment we offer two tests accounts, one is a commum user and other one is a store.
+You can user [POST] /auth to create a new user.
+
+- User (credits: R$49,50)
+```json
+{
+    "documentNumber": "11122233344",
+    "password": "mypass"
+}
+```
+
+- Store (credits: R$1,50)
+```json
+{
+    "documentNumber": "11222333000144",
+    "password": "mypass"
+}
+```
+---
+#### Routes
 - Attention to the new patterns d of route files:
     - `routes/web.php` is the public route: www.yoursite.com/public/{route} (no auth)
-    - `routes/api.php` is the root api path: www.yoursite.com/public/{route} (auth)
+    - `routes/api.php` is the root api path: www.yoursite.com/{route} (auth)
 
 - Use Laravel patterns to use all routes:
 
@@ -49,11 +68,8 @@
 | GET | /user/{id}/edit | edit | user.edit | get user data to edit |
 | PATCH/PUT | /user/{id} | update | user.update | save new user data |
 | DELETE | /user/{id} | destroy | user.destroy | delete an user |
----
 
-#### Database Migration
-- Use [Laravel Migration](https://laravel.com/docs/9.x/migrations)
-- Run `php artisan migration`
+---
 #### Create models
 - You can use [reliese/laravel](https://github.com/reliese/laravel) library to generate a new model
 - Get your connection name in `database.php` file
@@ -68,6 +84,9 @@
 #### Code Sniffer & Code Beautifier
 Use this commands for keep code defaults:
 - PHP Code Sniffer
-    - ```composer phpcs``` or  ```php vendor/bin/phpcs```
+    - `php vendor/bin/phpcs`
 - PHP Code Beautifier and Fixer
-    - ```composer phpcbf``` or ```php vendor/bin/phpcbf```
+    - `php vendor/bin/phpcbf`
+---
+## License
+This repository use [MIT License](https://choosealicense.com/licenses/mit/)
