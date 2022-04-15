@@ -21,7 +21,9 @@ RUN apt-get update && apt-get install -y \
     vim \
     git \
     libonig-dev \
-    curl
+    curl \ 
+    wget \
+    patch
  
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -49,5 +51,15 @@ EXPOSE 3306
 WORKDIR /var/www
 
 USER $user
+
+RUN wget https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
+RUN wget https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar
+
+RUN chmod u+x *.phar
+
+RUN mv phpcbf.phar /usr/local/bin/phpcbf
+RUN mv phpcs.phar /usr/local/bin/phpcs
+
+RUN phpcs --config-set default_standard PSR2
 
 CMD ["php-fpm"]
