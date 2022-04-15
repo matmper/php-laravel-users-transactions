@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use DB;
 use App\Interfaces\Transaction;
+use App\Repositories\TransactionRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Gate;
 
@@ -59,10 +61,14 @@ class TransactionService implements Transaction
     public function __construct(
         protected WalletService $walletService,
         protected UserService $userService,
-        protected MessageService $messageService
+        protected MessageService $messageService,
+        protected TransactionRepository $transactionRepository
     ) {
         // usuário da sessão envia transação
         $this->payer = auth()->user();
+
+        $this->transaction = null;
+        $this->message = null;
     }
 
     /**
@@ -75,7 +81,7 @@ class TransactionService implements Transaction
     {
         $this->amount = $amount;
 
-        $this->payee = $this->getPayee($payeeId);
+        $this->getPayee($payeeId);
 
         $this->validateUser();
         $this->validateType();
@@ -88,11 +94,11 @@ class TransactionService implements Transaction
      * Captura dados do usuário beneficiário (recebedor)
      *
      * @param string $payeeId
-     * @return object
+     * @return void
      */
-    private function getPayee(string $payeeId): object
+    private function getPayee(string $payeeId): void
     {
-        return $this->userService->getUserData($payeeId);
+        $this->payee = $this->userService->getUserData($payeeId);
     }
 
     /**
@@ -136,11 +142,9 @@ class TransactionService implements Transaction
      */
     public function transaction(): self
     {
-        $this->transaction = (object) [
-            'public_id' => 'teste'
-        ];
-
         $this->authorizeCenterBank();
+        $this->storeTransaction();
+        $this->setTransaction();
 
         return $this;
     }
@@ -161,6 +165,56 @@ class TransactionService implements Transaction
         if ($response->getStatusCode() !== Response::HTTP_OK) {
             throw new \Exception('transação não autorizada pelo center bank', $response->getStatusCode());
         };
+    }
+
+    /**
+     * Realiza a criação interna da transação, salvando dados no banco relacional
+     *
+     * @return void
+     */
+    private function storeTransaction(): void
+    {
+        DB::transaction(function () {
+            $this->transaction = $this->transactionRepository->insert([
+                'public_id' => \Illuminate\Support\Str::uuid()->toString(),
+                'payer_id' => $this->payer->public_id,
+                'payee_id' => $this->payee->public_id,
+                'amount' => $this->amount,
+            ]);
+
+            if (empty($this->transaction->public_id)) {
+                throw new \Exception('erro ao realizar transação ao salvar dados');
+            }
+
+            $this->walletService->insert([
+                'amount' => -$this->amount,
+                'user_id' => $this->payer->id,
+                'name' => 'transação entre usuários',
+                'transaction_id' => $this->transaction->public_id,
+            ]);
+
+            $this->walletService->insert([
+                'amount' => $this->amount,
+                'user_id' => $this->payee->id,
+                'name' => 'recebimento de transação',
+                'transaction_id' => $this->transaction->public_id,
+            ]);
+        });
+    }
+
+    /**
+     * Define o que será considerado no retorno da variável $transaction
+     *
+     * @return void
+     */
+    private function setTransaction(): void
+    {
+        $this->transaction = (object) [
+            'public_id' => $this->transaction->public_id,
+            'amount' => $this->amount,
+            'payer' => $this->payer->public_id,
+            'payee' => $this->payee->public_id,
+        ];
     }
 
     /**

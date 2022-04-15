@@ -21,4 +21,15 @@ class WalletService
     {
         return $this->walletRepository->getBalance($userId);
     }
+
+    /**
+     * Realiza a ponta com o repository e insere saldo
+     *
+     * @param array $data
+     * @return object|null
+     */
+    public function insert(array $data): ?object
+    {
+        return $this->walletRepository->insert($data);
+    }
 }

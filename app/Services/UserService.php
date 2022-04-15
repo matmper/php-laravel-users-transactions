@@ -25,7 +25,7 @@ class UserService
     {
         return $this->userRepository->firstOrFail(
             ['public_id' => $publicId],
-            ['name', 'email', 'document_number', 'public_id']
+            ['id', 'name', 'email', 'document_number', 'public_id']
         );
     }
 }
