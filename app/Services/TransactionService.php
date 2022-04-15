@@ -2,21 +2,25 @@
 
 namespace App\Services;
 
-class TransactionService
-{
-    /**
-     * Usuário da sessão, realizou requisição
-     *
-     * @var integer
-     */
-    private $id;
+use App\Interfaces\Transaction;
+use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Gate;
 
+class TransactionService implements Transaction
+{
     /**
      * Usuário que irá receber a transação
      *
-     * @var integer
+     * @var object
      */
-    private $userId;
+    private $payee;
+
+    /**
+     * Dados do usuário que receberá a transação
+     * 
+     * @var object
+     */
+    private $payer;
 
     /**
      * Retorna em centavos o saldo inicial do usuário
@@ -46,45 +50,58 @@ class TransactionService
      */
     public $message;
     
-    public function __construct(protected WalletService $walletService)
-    {
-        
+    /**
+     * Public construct
+     *
+     * @param WalletService $walletService
+     * @param UserService $userService
+     */
+    public function __construct(
+        protected WalletService $walletService,
+        protected UserService $userService
+    ) {
+        // usuário da sessão envia transação
+        $this->payer = auth()->user();
     }
 
     /**
      * Realiza todo o serviço e validações de uma transação
      *
-     * @param integer $userId
-     * @return integer
+     * @param string $payeeId
+     * @return self
      */
-    public function init(int $userId, int $amount): self
+    public function handler(string $payeeId, int $amount): self
     {
-        // usuário da sessão envia transação
-        $this->id = auth()->user()->id;
-
-        $this->userId = $userId;
         $this->amount = $amount;
 
-        $this->validateBalance();
+        $this->payee = $this->getPayee($payeeId);
+
+        $this->validateUser();
         $this->validateType();
+        $this->validateBalance();
 
         return $this;
     }
 
     /**
-     * Realiza validação de saldo do usuário
+     * Captura dados do usuário beneficiário (recebedor)
+     *
+     * @param string $payeeId
+     * @return object
+     */
+    private function getPayee(string $payeeId): object
+    {
+        return $this->userService->getUserData($payeeId);
+    }
+
+    /**
+     * Valida usuário para qual está enviando a transação
      *
      * @return void
      */
-    private function validateBalance(): void
+    private function validateUser(): void
     {
-        $this->balance = $this->walletService->getBalance($this->id);
-
-        if ($this->balance < $this->amount) {
-            throw new \Exception("saldo insuficiente", 402);
-        }
-
-        return;
+        Gate::check('user-is-different', [$this->payee->public_id]);
     }
 
     /**
@@ -94,17 +111,27 @@ class TransactionService
      */
     private function validateType(): void
     {
-        if (auth()->user()->type !== 'pf') {
-            throw new \Exception("usuários tipo lojistas não podem realizar transações", 403);
-        }
+        Gate::check('send-transaction');
+    }
 
-        return;
+    /**
+     * Realiza validação de saldo do usuário
+     *
+     * @return void
+     */
+    private function validateBalance(): void
+    {
+        $this->balance = $this->walletService->getBalance($this->payer->id);
+
+        if ($this->balance < $this->amount) {
+            throw new \Exception("saldo insuficiente", 402);
+        }
     }
 
     /**
      * Realiza o envio de mensagens ao finalizar transação
      *
-     * @return object
+     * @return self
      */
     public function transaction(): self
     {
@@ -118,7 +145,7 @@ class TransactionService
     /**
      * Realiza o envio de mensagens ao finalizar transação
      *
-     * @return object
+     * @return self
      */
     public function message(): self
     {

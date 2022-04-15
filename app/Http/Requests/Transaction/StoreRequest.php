@@ -14,7 +14,7 @@ class StoreRequest extends BaseRequest
     public function rules(): array
     {
         return [
-            'userId' => ['required', 'integer', 'min:1'],
+            'payeeId' => ['required', 'string', 'min:36', 'max:36'],
             'amount' => ['required', 'integer', 'min:1'],
         ];
     }

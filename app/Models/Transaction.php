@@ -16,8 +16,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * 
  * @property int $id
  * @property string $public_id
- * @property int $user_id
- * @property int $user_id_to
+ * @property string $payer_id
+ * @property string $payee_id
  * @property int $amount
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -34,25 +34,23 @@ class Transaction extends Model
 	protected $table = 'transactions';
 
 	protected $casts = [
-		'user_id' => 'int',
-		'user_id_to' => 'int',
 		'amount' => 'int'
 	];
 
 	protected $fillable = [
 		'public_id',
-		'user_id',
-		'user_id_to',
+		'payer_id',
+		'payee_id',
 		'amount'
 	];
 
 	public function user()
 	{
-		return $this->belongsTo(User::class, 'user_id_to');
+		return $this->belongsTo(User::class, 'payer_id', 'public_id');
 	}
 
 	public function wallets()
 	{
-		return $this->hasMany(Wallet::class);
+		return $this->hasMany(Wallet::class, 'transaction_id', 'public_id');
 	}
 }

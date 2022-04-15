@@ -11,7 +11,7 @@ class WalletService
         
     }
 
-    /**
+    /** 
      * Retorna o saldo do usuário em centavos (100 = R$1,00)
      *
      * @param integer $userId

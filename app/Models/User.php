@@ -56,7 +56,7 @@ class User extends Model implements Authenticatable, JWTSubject
 
 	public function transactions()
 	{
-		return $this->hasMany(Transaction::class, 'user_id_to');
+		return $this->hasMany(Transaction::class, 'payer_id', 'public_id');
 	}
 
 	public function wallets()
@@ -83,4 +83,24 @@ class User extends Model implements Authenticatable, JWTSubject
     {
         return [];
     }
+
+	/**
+	 * Retorna true se a pessoa for pessoa física
+	 *
+	 * @return boolean
+	 */
+	public function getIsPfAttribute(): bool
+	{
+		return $this->type === 'pf';
+	}
+
+	/**
+	 * Retorna true se a pessoa for pessoa jurídica
+	 *
+	 * @return boolean
+	 */
+	public function getIsPjAttribute(): bool
+	{
+		return $this->type === 'pj';
+	}
 }

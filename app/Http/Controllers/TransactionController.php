@@ -20,14 +20,11 @@ class TransactionController extends Controller
      */
     public function store(StoreRequest $request): object 
     {
-        $transaction = $this->transactionService->init($request->userId, $request->amount)
+        $transaction = $this->transactionService->handler($request->payeeId, $request->amount)
             ->transaction()
             ->message()
             ->toArray();
 
-        return $this->resp(
-            'transação realizada com sucesso',
-            $transaction,
-        );
+        return $this->resp('transação realizada com sucesso', $transaction);
     }
 }
