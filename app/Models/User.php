@@ -6,6 +6,7 @@
 
 namespace App\Models;
 
+use App\Enums\TypeEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -91,7 +92,7 @@ class User extends Model implements Authenticatable, JWTSubject
 	 */
 	public function getIsPfAttribute(): bool
 	{
-		return $this->type === 'pf';
+		return $this->type === TypeEnum::PESSOA_FISICA;
 	}
 
 	/**
@@ -101,6 +102,6 @@ class User extends Model implements Authenticatable, JWTSubject
 	 */
 	public function getIsPjAttribute(): bool
 	{
-		return $this->type === 'pj';
+		return $this->type ===  TypeEnum::PESSOA_JURIDICA;
 	}
 }
