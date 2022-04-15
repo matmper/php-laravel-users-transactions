@@ -28,7 +28,7 @@ class StoreRequest extends BaseRequest
             ],
             'email' => ['required', 'email', 'unique:users,email', 'max:150'],
             'password' => ['required', 'min:6'],
-            'type' => ['required', 'in:normal,store']
+            'type' => ['required', 'in:pf,pj']
         ];
     }
 }

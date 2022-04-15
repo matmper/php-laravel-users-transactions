@@ -22,17 +22,15 @@ use Illuminate\Notifications\Notifiable;
  * @property string $public_id
  * @property string $name
  * @property string $email
- * @property string|null $document_number
- * @property string|null $phone_ddi
- * @property string|null $phone
- * @property int $two_step_auth
- * @property int $status
+ * @property string $document_number
  * @property string $password
+ * @property string $type
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property string|null $deleted_at
  * 
- * @property Collection|UsersLog[] $users_logs
+ * @property Collection|Transaction[] $transactions
+ * @property Collection|Wallet[] $wallets
  *
  * @package App\Models
  */
@@ -43,10 +41,6 @@ class User extends Model implements Authenticatable, JWTSubject
 	use SoftDeletes;
 	protected $table = 'users';
 
-	protected $casts = [
-
-	];
-
 	protected $hidden = [
 		'password'
 	];
@@ -56,9 +50,19 @@ class User extends Model implements Authenticatable, JWTSubject
 		'name',
 		'email',
 		'document_number',
-		'type',
-		'password'
+		'password',
+		'type'
 	];
+
+	public function transactions()
+	{
+		return $this->hasMany(Transaction::class, 'payer_id', 'public_id');
+	}
+
+	public function wallets()
+	{
+		return $this->hasMany(Wallet::class);
+	}
 
 	/**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -79,4 +83,24 @@ class User extends Model implements Authenticatable, JWTSubject
     {
         return [];
     }
+
+	/**
+	 * Retorna true se a pessoa for pessoa física
+	 *
+	 * @return boolean
+	 */
+	public function getIsPfAttribute(): bool
+	{
+		return $this->type === 'pf';
+	}
+
+	/**
+	 * Retorna true se a pessoa for pessoa jurídica
+	 *
+	 * @return boolean
+	 */
+	public function getIsPjAttribute(): bool
+	{
+		return $this->type === 'pj';
+	}
 }
