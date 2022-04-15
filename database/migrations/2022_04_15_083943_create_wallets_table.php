@@ -13,21 +13,21 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('wallets', function (Blueprint $table) {
             $table->id();
-            $table->uuid('public_id')->default('UUID()')->unique()->comment('código externo do usuário');
-            $table->string('name', 75);
-            $table->string('email', 150)->unique();
-            $table->string('document_number', 14)->unique()->comment('CPF ou CNPJ');
-            $table->string('password', 250);
-            $table->enum('type', ['pf', 'pj'])->default('pf')->comment('tipo de conta, usuário ou lojista');
+            $table->bigInteger('user_id')->unsigned()->comment('usuário que enviou transação');
+            $table->bigInteger('transaction_id')->unsigned()->nullable()->comment('usuário que enviou transação');
+            $table->string('name', 25)->comment('descrição da transação');
+            $table->bigInteger('amount')->comment('valor em centavos da transação');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             $table->softDeletes('deleted_at', 0);
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('transaction_id')->references('id')->on('transactions');
         });
 
         Artisan::call('db:seed', [
-            '--class' => 'UserSeeder',
+            '--class' => 'WalletSeeder',
             '--force' => true
         ]);
     }
@@ -39,6 +39,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('wallets');
     }
 };

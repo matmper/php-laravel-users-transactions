@@ -10,10 +10,6 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Auth\Authenticatable as AuthenticableTrait;
-use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Notifications\Notifiable;
 
 /**
  * Class User
@@ -22,30 +18,22 @@ use Illuminate\Notifications\Notifiable;
  * @property string $public_id
  * @property string $name
  * @property string $email
- * @property string|null $document_number
- * @property string|null $phone_ddi
- * @property string|null $phone
- * @property int $two_step_auth
- * @property int $status
+ * @property string $document_number
  * @property string $password
+ * @property string $type
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property string|null $deleted_at
  * 
- * @property Collection|UsersLog[] $users_logs
+ * @property Collection|Transaction[] $transactions
+ * @property Collection|Wallet[] $wallets
  *
  * @package App\Models
  */
-class User extends Model implements Authenticatable, JWTSubject
+class User extends Model
 {
-	use Notifiable;
-	use AuthenticableTrait;
 	use SoftDeletes;
 	protected $table = 'users';
-
-	protected $casts = [
-
-	];
 
 	protected $hidden = [
 		'password'
@@ -56,9 +44,19 @@ class User extends Model implements Authenticatable, JWTSubject
 		'name',
 		'email',
 		'document_number',
-		'type',
-		'password'
+		'password',
+		'type'
 	];
+
+	public function transactions()
+	{
+		return $this->hasMany(Transaction::class, 'user_id_to');
+	}
+
+	public function wallets()
+	{
+		return $this->hasMany(Wallet::class);
+	}
 
 	/**
      * Get the identifier that will be stored in the subject claim of the JWT.

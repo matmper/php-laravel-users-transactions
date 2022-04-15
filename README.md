@@ -29,7 +29,7 @@ $ docker-compose exec webapp php artisan migrate
 ---
 ## Documentation
 - Routes (Postman): [show collection](https://documenter.getpostman.com/view/8724744/Uyr4LL6b)
-- Diagram (Wiki): [click](https://github.com/matmper/php-laravel-users-transactions/wiki/Fluxograma)
+- Diagram (Wiki): [click](https://github.com/matmper/php-laravel-users-transactions/wiki/Diagrama)
 - Flowchart (Wiki): [click](https://github.com/matmper/php-laravel-users-transactions/wiki/Fluxograma---Transa%C3%A7%C3%B5es) 
 
 ---
@@ -37,7 +37,7 @@ $ docker-compose exec webapp php artisan migrate
 In development envrioment we offer two tests accounts, one is a commum user and other one is a store.
 You can user [POST] /auth to create a new user.
 
-- User (credits: R$49,50)
+- User - PF (credits: R$49,50)
 ```json
 {
     "documentNumber": "11122233344",
@@ -45,7 +45,7 @@ You can user [POST] /auth to create a new user.
 }
 ```
 
-- Store (credits: R$1,50)
+- Store - PJ (credits: R$1,50)
 ```json
 {
     "documentNumber": "11222333000144",
