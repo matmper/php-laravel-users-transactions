@@ -10,6 +10,10 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Auth\Authenticatable as AuthenticableTrait;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Notifications\Notifiable;
 
 /**
  * Class User
@@ -30,8 +34,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * @package App\Models
  */
-class User extends Model
+class User extends Model implements Authenticatable, JWTSubject
 {
+	use Notifiable;
+	use AuthenticableTrait;
 	use SoftDeletes;
 	protected $table = 'users';
 
