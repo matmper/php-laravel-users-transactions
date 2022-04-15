@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Interfaces\Transaction;
-use App\Repositories\UserRepository;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Gate;
 
 class TransactionService implements Transaction
@@ -58,7 +58,8 @@ class TransactionService implements Transaction
      */
     public function __construct(
         protected WalletService $walletService,
-        protected UserService $userService
+        protected UserService $userService,
+        protected MessageService $messageService
     ) {
         // usuário da sessão envia transação
         $this->payer = auth()->user();
@@ -135,11 +136,31 @@ class TransactionService implements Transaction
      */
     public function transaction(): self
     {
-        $this->transaction = 1;
+        $this->transaction = (object) [
+            'public_id' => 'teste'
+        ];
 
-        //https://run.mocky.io/v3/8fafdd68-a090-496f-8c9a-3442cf30dae6
+        $this->authorizeCenterBank();
 
         return $this;
+    }
+
+    /**
+     * Realiza vadalição da transação no Center Bank
+     *
+     * @return void
+     */
+    private function authorizeCenterBank(): void
+    {
+        $client = new \GuzzleHttp\Client([
+            'verify' => config('app.env') !== 'local',
+        ]);
+
+        $response = $client->get('https://run.mocky.io/v3/' . config('keys.center_bank'));
+
+        if ($response->getStatusCode() !== Response::HTTP_OK) {
+            throw new \Exception('transação não autorizada pelo center bank', $response->getStatusCode());
+        };
     }
 
     /**
@@ -149,9 +170,7 @@ class TransactionService implements Transaction
      */
     public function message(): self
     {
-        $this->message = 2;
-
-        //http://o4d9z.mocklab.io/notify
+        $this->message = $this->messageService->send($this->transaction->public_id);
 
         return $this;
     }
