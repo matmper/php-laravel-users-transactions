@@ -29,7 +29,8 @@ $ docker-compose exec webapp php artisan migrate
 ---
 ## Documentation
 - Routes (Postman): [show collection](https://documenter.getpostman.com/view/8724744/Uyr4LL6b)
-- Flowchart (Wiki): [click](https://github.com/matmper/php-laravel-users-transactions/wiki/Fluxograma)
+- Diagram (Wiki): [click](https://github.com/matmper/php-laravel-users-transactions/wiki/Fluxograma)
+- Flowchart (Wiki): [click](https://github.com/matmper/php-laravel-users-transactions/wiki/Fluxograma---Transa%C3%A7%C3%B5es) 
 
 ---
 ## Auth (development)
