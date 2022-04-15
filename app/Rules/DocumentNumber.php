@@ -6,7 +6,7 @@ use Illuminate\Contracts\Validation\Rule;
 
 class DocumentNumber implements Rule
 {
-    private $documentNumber;
+    private $documentNumberType;
 
     /**
      * Create a new rule instance.

@@ -8,7 +8,6 @@ class UserController extends Controller
 {
     public function __construct(protected WalletService $walletService)
     {
-        
     }
     /**
      * Retorna dados do usuário logado

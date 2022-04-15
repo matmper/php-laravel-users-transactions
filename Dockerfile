@@ -52,14 +52,4 @@ WORKDIR /var/www
 
 USER $user
 
-RUN wget https://squizlabs.github.io/PHP_CodeSniffer/phpcs.phar
-RUN wget https://squizlabs.github.io/PHP_CodeSniffer/phpcbf.phar
-
-RUN chmod u+x *.phar
-
-RUN mv phpcbf.phar /usr/local/bin/phpcbf
-RUN mv phpcs.phar /usr/local/bin/phpcs
-
-RUN phpcs --config-set default_standard PSR2
-
 CMD ["php-fpm"]

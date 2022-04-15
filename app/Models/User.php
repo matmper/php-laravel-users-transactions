@@ -18,7 +18,7 @@ use Illuminate\Notifications\Notifiable;
 
 /**
  * Class User
- * 
+ *
  * @property int $id
  * @property string $public_id
  * @property string $name
@@ -29,7 +29,7 @@ use Illuminate\Notifications\Notifiable;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property string|null $deleted_at
- * 
+ *
  * @property Collection|Transaction[] $transactions
  * @property Collection|Wallet[] $wallets
  *
@@ -37,35 +37,35 @@ use Illuminate\Notifications\Notifiable;
  */
 class User extends Model implements Authenticatable, JWTSubject
 {
-	use Notifiable;
-	use AuthenticableTrait;
-	use SoftDeletes;
-	protected $table = 'users';
+    use Notifiable;
+    use AuthenticableTrait;
+    use SoftDeletes;
+    protected $table = 'users';
 
-	protected $hidden = [
-		'password'
-	];
+    protected $hidden = [
+        'password'
+    ];
 
-	protected $fillable = [
-		'public_id',
-		'name',
-		'email',
-		'document_number',
-		'password',
-		'type'
-	];
+    protected $fillable = [
+        'public_id',
+        'name',
+        'email',
+        'document_number',
+        'password',
+        'type'
+    ];
 
-	public function transactions()
-	{
-		return $this->hasMany(Transaction::class, 'payer_id', 'public_id');
-	}
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'payer_id', 'public_id');
+    }
 
-	public function wallets()
-	{
-		return $this->hasMany(Wallet::class);
-	}
+    public function wallets()
+    {
+        return $this->hasMany(Wallet::class);
+    }
 
-	/**
+    /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *
      * @return mixed
@@ -85,23 +85,23 @@ class User extends Model implements Authenticatable, JWTSubject
         return [];
     }
 
-	/**
-	 * Retorna true se a pessoa for pessoa física
-	 *
-	 * @return boolean
-	 */
-	public function getIsPfAttribute(): bool
-	{
-		return $this->type === TypeEnum::PESSOA_FISICA;
-	}
+    /**
+     * Retorna true se a pessoa for pessoa física
+     *
+     * @return boolean
+     */
+    public function getIsPfAttribute(): bool
+    {
+        return $this->type === TypeEnum::PESSOA_FISICA;
+    }
 
-	/**
-	 * Retorna true se a pessoa for pessoa jurídica
-	 *
-	 * @return boolean
-	 */
-	public function getIsPjAttribute(): bool
-	{
-		return $this->type ===  TypeEnum::PESSOA_JURIDICA;
-	}
+    /**
+     * Retorna true se a pessoa for pessoa jurídica
+     *
+     * @return boolean
+     */
+    public function getIsPjAttribute(): bool
+    {
+        return $this->type ===  TypeEnum::PESSOA_JURIDICA;
+    }
 }

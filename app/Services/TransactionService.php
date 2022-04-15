@@ -19,7 +19,7 @@ class TransactionService implements Transaction
 
     /**
      * Dados do usuário que receberá a transação
-     * 
+     *
      * @var object
      */
     private $payer;

@@ -8,10 +8,9 @@ class WalletService
 {
     public function __construct(protected WalletRepository $walletRepository)
     {
-        
     }
 
-    /** 
+    /**
      * Retorna o saldo do usuário em centavos (100 = R$1,00)
      *
      * @param integer $userId

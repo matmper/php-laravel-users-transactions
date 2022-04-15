@@ -9,7 +9,6 @@ class TransactionController extends Controller
 {
     public function __construct(private TransactionService $transactionService)
     {
-        
     }
 
     /**
@@ -18,7 +17,7 @@ class TransactionController extends Controller
      * @param StoreRequest $request
      * @return object
      */
-    public function store(StoreRequest $request): object 
+    public function store(StoreRequest $request): object
     {
         $transaction = $this->transactionService->handler($request->payeeId, $request->amount)
             ->transaction()
