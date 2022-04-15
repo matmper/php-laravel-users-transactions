@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Wallet
- * 
+ *
  * @property int $id
  * @property int $user_id
  * @property string|null $transaction_id
@@ -21,7 +21,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property string|null $deleted_at
- * 
+ *
  * @property Transaction|null $transaction
  * @property User $user
  *
@@ -29,28 +29,28 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Wallet extends Model
 {
-	use SoftDeletes;
-	protected $table = 'wallets';
+    use SoftDeletes;
+    protected $table = 'wallets';
 
-	protected $casts = [
-		'user_id' => 'int',
-		'amount' => 'int'
-	];
+    protected $casts = [
+        'user_id' => 'int',
+        'amount' => 'int'
+    ];
 
-	protected $fillable = [
-		'user_id',
-		'transaction_id',
-		'name',
-		'amount'
-	];
+    protected $fillable = [
+        'user_id',
+        'transaction_id',
+        'name',
+        'amount'
+    ];
 
-	public function transaction()
-	{
-		return $this->belongsTo(Transaction::class, 'transaction_id', 'public_id');
-	}
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class, 'transaction_id', 'public_id');
+    }
 
-	public function user()
-	{
-		return $this->belongsTo(User::class);
-	}
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
