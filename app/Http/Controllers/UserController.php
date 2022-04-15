@@ -20,7 +20,6 @@ class UserController extends Controller
         $user = auth()->user();
 
         return $this->resp(
-            true,
             'online',
             [
                 'user' => $user,

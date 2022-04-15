@@ -37,7 +37,7 @@ class AuthController extends Controller
             'expires_in' => auth()->factory()->getTTL() * 60,
         ];
  
-        return $this->resp(true, 'usuário encontrado', ['user' => auth()->user(), 'token' => $jwt]);
+        return $this->resp('usuário encontrado', ['user' => auth()->user(), 'token' => $jwt]);
     }
 
     /**
@@ -61,7 +61,7 @@ class AuthController extends Controller
             throw new \Exception("erro ao salvar usuário", 500);
         }
 
-        return $this->resp(true, 'registrado com sucesso', ['user' => $user]);
+        return $this->resp('registrado com sucesso', ['user' => $user]);
     }
 
     /**
@@ -71,8 +71,8 @@ class AuthController extends Controller
      */
     public function logout(): object
     {
-        if (auth()->logout(true)) {
-            return $this->resp(true, 'sessão encerrada com sucesso');
+        if (auth()->logout()) {
+            return $this->resp('sessão encerrada com sucesso');
         }
 
         throw new \Exception('houve um erro ao encerrar sessão', 500);
