@@ -76,19 +76,24 @@ You can user [POST] /auth to create a new user.
 - You can use [reliese/laravel](https://github.com/reliese/laravel) library to generate a new model
 - Get your connection name in `database.php` file
 - To generate this, use this command:
-    - ```php artisan code:models --table=yourtable```
+    - ```docker-compose exec webapp php artisan code:models --table=yourtable```
 ---
 #### Create repositories
 - You can use this custom command to generate a new repository
-    - `php artisan repository:create {modelName}`
-    - `php artisan repository:create all`
+    - `docker-compose exec webapp php artisan repository:create {modelName}`
+    - `docker-compose exec webapp php artisan repository:create all`
+---
+#### Tests - PHP Unit
+- Library: [PHP Unit 9](https://phpunit.de/getting-started/phpunit-9.html)
+- Use this commands for run testes
+    - `docker-compose exec webapp composer tests`
 ---
 #### Code Sniffer & Code Beautifier
 Use this commands for keep code defaults:
 - PHP Code Sniffer
-    - `php vendor/bin/phpcs`
+    - `docker-compose exec webapp php vendor/bin/phpcs`
 - PHP Code Beautifier and Fixer
-    - `php vendor/bin/phpcbf`
+    - `docker-compose exec webapp php vendor/bin/phpcbf`
 ---
 ## License
 This repository use [MIT License](https://choosealicense.com/licenses/mit/)

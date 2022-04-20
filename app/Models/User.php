@@ -15,6 +15,7 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Auth\Authenticatable as AuthenticableTrait;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class User
@@ -37,9 +38,8 @@ use Illuminate\Notifications\Notifiable;
  */
 class User extends Model implements Authenticatable, JWTSubject
 {
-    use Notifiable;
-    use AuthenticableTrait;
-    use SoftDeletes;
+    use Notifiable, AuthenticableTrait, SoftDeletes, HasFactory;
+    
     protected $table = 'users';
 
     protected $hidden = [
