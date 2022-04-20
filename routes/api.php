@@ -27,8 +27,8 @@ Route::controller(AuthController::class)->group(function() {
     Route::get('/logout', 'logout');
 });
 
-Route::controller(UserController::class)->prefix('users')->group(function() {
-    Route::get('/me', 'me');
+Route::controller(UserController::class)->prefix('users')->name('users')->group(function() {
+    Route::get('/me', 'me')->name('.me');
 });
 
 Route::controller(TransactionController::class)->prefix('transactions')->group(function() {
