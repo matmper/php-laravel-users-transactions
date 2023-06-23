@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -11,26 +10,10 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {   
-    return response()->json([
-        'success' => true,
-        'message' => 'users transactions',
-        'data' => [
-            'version' => 1
-        ]
-    ]);
-})->withoutMiddleware('auth:api');
-
-Route::controller(AuthController::class)->group(function() {
-    Route::post('/login', 'login')->withoutMiddleware('auth:api');
-    Route::post('/register', 'store')->withoutMiddleware('auth:api');
-    Route::get('/logout', 'logout');
-});
-
 Route::controller(UserController::class)->prefix('users')->name('users')->group(function() {
     Route::get('/me', 'me')->name('.me');
 });
 
-Route::controller(TransactionController::class)->prefix('transactions')->group(function() {
-    Route::post('/', 'store');
+Route::controller(TransactionController::class)->prefix('transactions')->name('transactions')->group(function() {
+    Route::post('/', 'store')->name('.store');
 });

@@ -2,10 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Enums\TypeEnum;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-
-use DB;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
@@ -17,28 +16,17 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        return DB::table('users')->insert([
+        User::factory(2)->sequence(
             [
-                'id' => 1,
-                'public_id' => \Illuminate\Support\Str::uuid()->toString(),
-                'name' => 'João das Neves',
                 'document_number' => '11122233344',
-                'email' => 'joao@teste.com',
-                'type' => 'pf',
-                'password' => Hash::make('mypass'),
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ], [
-                'id' => 2,
-                'public_id' => \Illuminate\Support\Str::uuid()->toString(),
-                'name' => 'Lojinha Silva',
-                'document_number' => '11222333000144',
-                'email' => 'loja@teste.com',
-                'type' => 'pj',
-                'password' => Hash::make('mypass'),
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'password' => Hash::make('mypass'), 
+                'type' => TypeEnum::PESSOA_FISICA
             ],
-        ]);
+            [
+                'document_number' => '11222333000144',
+                'password' => Hash::make('mypass'),
+                'type' => TypeEnum::PESSOA_JURIDICA
+            ]
+        )->create();
     }
 }

@@ -2,23 +2,21 @@
 
 namespace Database\Factories;
 
-use App\Enums\TypeEnum;
 use App\Models\User;
+use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Hash;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Transaction>
  */
-class UserFactory extends Factory
+class TransactionFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = User::class;
+    protected $model = Transaction::class;
 
     /**
      * Define the model's default state.
@@ -29,11 +27,9 @@ class UserFactory extends Factory
     {
         return [
             'public_id' => \Illuminate\Support\Str::uuid()->toString(),
-            'name' => fake()->name(),
-            'document_number' => rand(11111111111, 99999999999),
-            'email' => fake()->unique()->safeEmail(),
-            'type' => TypeEnum::PESSOA_FISICA,
-            'password' => Hash::make(fake()->password()),
+            'payer_id' => User::factory()->make()->public_id,
+            'payee_id' => User::factory()->make()->public_id,
+            'amount' => fake()->randomNumber(3, true),
             'created_at' => now(),
             'updated_at' => now(),
         ];

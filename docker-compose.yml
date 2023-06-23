@@ -6,65 +6,42 @@ services:
     webapp:
         container_name: ut-php-8
         build:
-            args:
-                user: 0 # $ echo $USER
-                uid: 501 # $ id -u
             context: .
             dockerfile: ./Dockerfile
-        working_dir: /var/www/
-        volumes:
-            - ./:/var/www
-        networks:
-            - phpnet
-        depends_on:
-            - mysqlapp
         ports:
-            - "9000:9000"
-        links:
-            - nginxapp
-            - mysqlapp
-        restart: unless-stopped
-    
-    #Nginx Service
-    nginxapp:
-        container_name: ut-nginx
-        image: nginx:latest
-        ports:
-                - "8080:80"
+            - "${APP_EXTERNAL_PORT:-80}:80"
         volumes:
-            - ./:/var/www
-            - ./docker/default.conf:/etc/nginx/conf.d/site.conf
+            - ./:/var/www/html
+            - ./docker/nginx/default:/etc/nginx/sites-available/default
         networks:
-                - phpnet
-        links:
-            - mysqlapp
-        restart: unless-stopped
-    
-    # DB - MySQL 5.7
-    mysqlapp:
-        container_name: ut-mysql-57
-        image: mysql:5.7
-        platform: linux/x86_64
-        environment:
-            MYSQL_PORT: 3306
-            MYSQL_ROOT_PASSWORD: pass123
-            MYSQL_DATABASE: userstransactions
-            MYSQL_USER: user
-            MYSQL_PASSWORD: pass123
+            - ut-network
+        
+    # DB - MySQL 8.0
+    ut-mysql:
+        image: mysql/mysql-server:8.0.23
+        container_name: ut-mysql-8
+        tty: true
         command:
-            - --explicit_defaults_for_timestamp
             - --default-authentication-plugin=mysql_native_password
-        volumes:
-            - ./docker/volumes/mysql/data:/var/lib/mysql
-            #- ./docker/mysql-init.sql:/docker-entrypoint-initdb.d/mysql-init.sql:ro
-            #- ./docker/my.cnf:/etc/mysql/my.cnf
+            - --explicit_defaults_for_timestamp
         ports:
-            - "3306:3306"
+            - "${DB_EXTERNAL_PORT:-3306}:3306"
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_ROOT_HOST: '%'
+        volumes:
+            - utdbdata:/var/lib/mysql
+            - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
         networks:
-            - phpnet
-        restart: unless-stopped
+            - ut-network
 
 #Docker Networks
 networks:
-    phpnet:
+    ut-network:
         driver: bridge
+
+#Volumes
+volumes:
+    utdbdata:
+        driver: local
