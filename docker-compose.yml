@@ -47,6 +47,18 @@ services:
         networks:
             - ut-network
 
+    # Swagger
+    swagger:
+        image: swaggerapi/swagger-ui
+        ports:
+            - 81:8080
+        environment:
+            SWAGGER_JSON: /spec/swagger.json
+        volumes:
+            - ./docs/swagger.json:/spec/swagger.json
+        networks:
+            - ut-network
+
 #Docker Networks
 networks:
     ut-network:

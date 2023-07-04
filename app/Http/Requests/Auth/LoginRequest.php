@@ -18,7 +18,7 @@ class LoginRequest extends BaseRequest
                 'required',
                 'string',
                 'min:11',
-                'max:14'
+                'max:14',
             ],
             'password' => ['required', 'min:6']
         ];

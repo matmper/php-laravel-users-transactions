@@ -5,6 +5,7 @@ CONTAINER=ut-php-8
 build: kill
 	docker-compose up --build -d
 	docker exec -it $(CONTAINER) php artisan key:generate
+	docker exec -it $(CONTAINER) php artisan jwt:secret -n
 	make config-cache
 	make migrate-fresh
 
@@ -43,11 +44,15 @@ tests:
 
 config-cache:
 	docker exec -it $(CONTAINER) php artisan config:cache
+	docker exec -it $(CONTAINER) php artisan cache:clear
 
-# Code Sniffer
+swagger:
+	docker exec -it $(CONTAINER) php ./vendor/bin/openapi ./app -o ./docs/swagger.json
 
-phpcs:
-	docker exec -it $(CONTAINER) php vendor/bin/phpcs
+code-check:
+	docker exec -it $(CONTAINER) php ./vendor/bin/openapi ./app 1> /dev/null
+	docker exec -it $(CONTAINER) php ./vendor/bin/phpstan analyse
+	docker exec -it $(CONTAINER) php ./vendor/bin/phpcs
 
 phpcbf:
 	docker exec -it $(CONTAINER) php vendor/bin/phpcbf

@@ -57,7 +57,7 @@ class Handler extends ExceptionHandler
             'line' => $exception->getLine(),
         ];
 
-        if (config('app.env') == 'local') {
+        if (config('app.debug')) {
             $data['trace'] = $exception->getTrace();
         }
 
@@ -65,8 +65,7 @@ class Handler extends ExceptionHandler
         $getCode = $getCode && in_array($getCode, array_keys(Response::$statusTexts)) ? $getCode : 500;
 
         return response()->json([
-            'success' => false,
-            'message' => $exception->getMessage(),
+            'error' => $exception->getMessage(),
             'data' => $data
         ], $getCode);
     }

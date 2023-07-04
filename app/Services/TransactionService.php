@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use DB;
 use App\Interfaces\Transaction;
 use App\Repositories\TransactionRepository;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Gate;
 
@@ -131,7 +131,7 @@ class TransactionService implements Transaction
         $this->balance = $this->walletService->getBalance($this->payer->id);
 
         if ($this->balance < $this->amount) {
-            throw new \Exception("saldo insuficiente", 402);
+            throw new \Exception("insufficient ballance", 402);
         }
     }
 
@@ -163,7 +163,7 @@ class TransactionService implements Transaction
         $response = $client->get('https://run.mocky.io/v3/' . config('keys.center_bank'));
 
         if ($response->getStatusCode() !== Response::HTTP_OK) {
-            throw new \Exception('transação não autorizada pelo center bank', $response->getStatusCode());
+            throw new \Exception('transaction not authorized into bank api', $response->getStatusCode());
         };
     }
 
@@ -174,7 +174,9 @@ class TransactionService implements Transaction
      */
     private function storeTransaction(): void
     {
-        DB::transaction(function () {
+        DB::beginTransaction();
+
+        try {
             $this->transaction = $this->transactionRepository->insert([
                 'public_id' => \Illuminate\Support\Str::uuid()->toString(),
                 'payer_id' => $this->payer->public_id,
@@ -183,23 +185,36 @@ class TransactionService implements Transaction
             ]);
 
             if (empty($this->transaction->public_id)) {
-                throw new \Exception('erro ao realizar transação ao salvar dados');
+                throw new \Exception('error to store transaction and create row', Response::HTTP_INTERNAL_SERVER_ERROR);
             }
 
-            $this->walletService->insert([
+            $payerWallet = $this->walletService->insert([
                 'amount' => -$this->amount,
                 'user_id' => $this->payer->id,
                 'name' => 'transação entre usuários',
                 'transaction_id' => $this->transaction->public_id,
             ]);
 
-            $this->walletService->insert([
+            if (empty($payerWallet->id)) {
+                throw new \Exception('error to store payer wallet', Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+
+            $payeeWallet = $this->walletService->insert([
                 'amount' => $this->amount,
                 'user_id' => $this->payee->id,
                 'name' => 'recebimento de transação',
                 'transaction_id' => $this->transaction->public_id,
             ]);
-        });
+
+            if (empty($payeeWallet->id)) {
+                throw new \Exception('error to store payee wallet', Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
+
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            throw $th;
+        }
     }
 
     /**

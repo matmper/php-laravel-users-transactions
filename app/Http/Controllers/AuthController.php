@@ -2,27 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\StoreRequest;
+use App\Http\Resources\ResponseResource;
 use App\Repositories\UserRepository;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
     public function __construct(private UserRepository $userRepository)
     {
+        //
     }
 
     /**
-     * Realiza o login e cria sessão de um novo usuário
-     *
-     * @param LoginRequest $request
-     * @return object
+     * @OA\POST(
+     *  path="/login",
+     *  summary="Authenticate user",
+     *  tags={"Auth"},
+     *  @OA\RequestBody(
+     *     @OA\JsonContent(
+     *        required={"documentNumber","password"},
+     *        @OA\Property(property="documentNumber", type="string", format="text", example="11122233344"),
+     *        @OA\Property(property="password", type="string", format="text", example="mypass"),
+     *     ),
+     *  ),
+     *  @OA\Response(response=200, description="user authenticated"), 
+     *  @OA\Response(response=401, description="document number or password is invalid")
+     * )
      */
-    public function login(LoginRequest $request): object
+    public function login(LoginRequest $request): JsonResponse
     {
-        $token = Auth::attempt([
+        $token = auth()->guard(config('auth.defaults.guard'))->attempt([
             'document_number' => \App\Helpers\UtilsHelper::onlyNumbers($request->documentNumber),
             'password' => $request->password
         ]);
@@ -31,22 +44,39 @@ class AuthController extends Controller
             throw new \Exception('document number or password is invalid', 401);
         }
 
-        $jwt = [
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60,
-        ];
+        $auth = auth()->guard(config('auth.defaults.guard'));
  
-        return $this->resp('usuário encontrado', ['user' => auth()->user(), 'token' => $jwt]);
+        return ResponseResource::handle(
+            [
+                'access_token' => $token,
+                'token_type' => 'bearer',
+                'expires_in' => $auth->factory()->getTTL() * 60,
+            ],
+            ['user' => $auth->user()],
+            Response::HTTP_OK
+        );
     }
 
     /**
-     * Realiza o cadastro de um novo usuário
-     *
-     * @param StoreRequest $request
-     * @return object
+     * @OA\POST(
+     *  path="/register",
+     *  summary="Register new user",
+     *  tags={"Auth"},
+     *  @OA\RequestBody(
+     *     @OA\JsonContent(
+     *        required={"documentNumber","password"},
+     *        @OA\Property(property="name", type="string", example="João Neves"),
+     *        @OA\Property(property="email", type="email", example="joao@example.com"),
+     *        @OA\Property(property="documentNumber", type="string", example="11122233344"),
+     *        @OA\Property(property="password", type="string", example="mypass"),
+     *        @OA\Property(property="type", type="string", example="pf"),
+     *     ),
+     *  ),
+     *  @OA\Response(response=200, description="user created"), 
+     *  @OA\Response(response=500, description="error to create user")
+     * )
      */
-    public function store(StoreRequest $request): object
+    public function store(StoreRequest $request): JsonResponse
     {
         $user = $this->userRepository->insert([
             'public_id' => \Illuminate\Support\Str::uuid()->toString(),
@@ -58,23 +88,31 @@ class AuthController extends Controller
         ]);
 
         if (empty($user)) {
-            throw new \Exception("erro ao salvar usuário", 500);
+            throw new \Exception('error to create user', 500);
         }
 
-        return $this->resp('registrado com sucesso', ['user' => $user]);
+        return ResponseResource::handle($user, [], Response::HTTP_CREATED);
     }
 
     /**
-     * Logout, realiza o fim da sessão
-     *
-     * @return object
+     * @OA\GET(
+     *  path="/logout",
+     *  summary="Logout user from session",
+     *  tags={"Auth"},
+     *  security = {"jwt"},
+     *  @OA\Response(response=200, description="user created"), 
+     *  @OA\Response(response=500, description="error to create user")
+     * )
      */
-    public function logout(): object
+    public function logout(): JsonResponse
     {
-        if (auth()->logout()) {
-            return $this->resp('sessão encerrada com sucesso');
+        try {
+            auth()->guard(config('auth.defaults.guard'))->logout(true);
+            auth()->guard(config('auth.defaults.guard'))->invalidate(true);
+        } catch (\Throwable $th) {
+            throw $th;
         }
 
-        throw new \Exception('houve um erro ao encerrar sessão', 500);
+        return ResponseResource::handle(['success' => true], [], Response::HTTP_OK);
     }
 }

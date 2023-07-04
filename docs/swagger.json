@@ -1,0 +1,208 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Users Transactions API",
+        "version": "0.1"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:80",
+            "description": "Learning env"
+        }
+    ],
+    "paths": {
+        "/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Authenticate user",
+                "operationId": "2dd578ff7aba2721293dac66833b27d1",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "documentNumber",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "documentNumber": {
+                                        "type": "string",
+                                        "format": "text",
+                                        "example": "11122233344"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "text",
+                                        "example": "mypass"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "user authenticated"
+                    },
+                    "401": {
+                        "description": "document number or password is invalid"
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Register new user",
+                "operationId": "e32f0c4aafaa0a0e143cc5408d03caea",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "documentNumber",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "João Neves"
+                                    },
+                                    "email": {
+                                        "type": "email",
+                                        "example": "joao@example.com"
+                                    },
+                                    "documentNumber": {
+                                        "type": "string",
+                                        "example": "11122233344"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "mypass"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "example": "pf"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "user created"
+                    },
+                    "500": {
+                        "description": "error to create user"
+                    }
+                }
+            }
+        },
+        "/logout": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout user from session",
+                "operationId": "1deead8175ec826e4eff4671de92fbf3",
+                "responses": {
+                    "200": {
+                        "description": "user created"
+                    },
+                    "500": {
+                        "description": "error to create user"
+                    }
+                },
+                "security": [
+                    {
+                        "scalar": "jwt"
+                    }
+                ]
+            }
+        },
+        "/transactions": {
+            "post": {
+                "tags": [
+                    "Transactions"
+                ],
+                "summary": "Create new transaction",
+                "operationId": "238affdbe033b73010cbace3ad94520e",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "payeeId",
+                                    "amount"
+                                ],
+                                "properties": {
+                                    "payeeId": {
+                                        "type": "string",
+                                        "format": "text",
+                                        "example": "31bf19b0-1a2c-11ee-be56-0242ac120002"
+                                    },
+                                    "amount": {
+                                        "type": "numeric",
+                                        "format": "text",
+                                        "example": "100"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "transaction created"
+                    },
+                    "500": {
+                        "description": "error to create transaction"
+                    }
+                },
+                "security": [
+                    {
+                        "scalar": "jwt"
+                    }
+                ]
+            }
+        },
+        "/me": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Info about authenticated user",
+                "operationId": "9174a569ffd5f82da6d1982c9382d3ba",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "scalar": "jwt"
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearer": {
+                "type": "http",
+                "name": "Authorization",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "Bearer"
+            }
+        }
+    }
+}

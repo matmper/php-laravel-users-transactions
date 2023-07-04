@@ -2,8 +2,11 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Enums\TypeEnum;
+use App\Helpers\UtilsHelper;
 use App\Http\Requests\BaseRequest;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends BaseRequest
 {
@@ -14,7 +17,7 @@ class StoreRequest extends BaseRequest
      */
     public function rules(Request $request): array
     {
-        $request->document_number = (string) preg_replace("/[^0-9]/", "", $request->documentNumber);
+        $request->document_number = UtilsHelper::onlyNumbers($request->documentNumber);
 
         return [
             'name' => ['required', 'string', 'min:1', 'max:75'],
@@ -28,7 +31,7 @@ class StoreRequest extends BaseRequest
             ],
             'email' => ['required', 'email', 'unique:users,email', 'max:150'],
             'password' => ['required', 'min:6'],
-            'type' => ['required', 'in:pf,pj']
+            'type' => ['required', Rule::in(TypeEnum::toArray())],
         ];
     }
 }
