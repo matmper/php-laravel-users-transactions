@@ -8,11 +8,22 @@ services:
         build:
             context: .
             dockerfile: ./Dockerfile
+        volumes:
+            - ./:/var/www/html
+        networks:
+            - ut-network
+
+    # NGINX Service
+    ut-nginx:
+        image: nginx:alpine
+        container_name: ut-nginx-alpine
+        restart: unless-stopped
+        tty: true
         ports:
             - "${APP_EXTERNAL_PORT:-80}:80"
         volumes:
             - ./:/var/www/html
-            - ./docker/nginx/default:/etc/nginx/sites-available/default
+            - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
         networks:
             - ut-network
         
