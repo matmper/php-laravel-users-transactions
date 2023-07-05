@@ -8,6 +8,18 @@ use App\Http\Requests\BaseRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
+
+/**
+ * @OA\Schema(
+ *  schema="AuthStoreRequest",
+ *  required={"name", "email", "documentNumber", "password", "type"},
+ *  @OA\Property(property="name", type="string", example="User Name Example"),
+ *  @OA\Property(property="email", type="email", example="email@example.com"),
+ *  @OA\Property(property="documentNumber", type="string", example="11122233344"),
+ *  @OA\Property(property="password", type="string", example="mypass"),
+ *  @OA\Property(property="type", type="string", example="pf"),
+ * )
+ */
 class StoreRequest extends BaseRequest
 {
     /**

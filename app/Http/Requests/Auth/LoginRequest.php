@@ -4,6 +4,14 @@ namespace App\Http\Requests\Auth;
 
 use App\Http\Requests\BaseRequest;
 
+/**
+ * @OA\Schema(
+ *  schema="AuthLoginRequest",
+ *  required={"documentNumber","password"},
+ *  @OA\Property(property="documentNumber", type="string", format="text", example="11122233344"),
+ *  @OA\Property(property="password", type="string", format="text", example="mypass"),
+ * )
+ */
 class LoginRequest extends BaseRequest
 {
     /**

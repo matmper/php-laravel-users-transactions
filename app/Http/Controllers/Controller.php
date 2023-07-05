@@ -11,7 +11,7 @@ use Illuminate\Routing\Controller as BaseController;
  *     version="0.1"
  * ),
  *  @OA\Server(
- *      description="Learning env",
+ *      description="Development in local server",
  *      url="http://localhost:80"
  *  ),
  * @OA\SecurityScheme(

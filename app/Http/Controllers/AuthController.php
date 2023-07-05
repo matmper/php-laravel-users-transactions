@@ -18,18 +18,32 @@ class AuthController extends Controller
     }
 
     /**
-     * @OA\POST(
+     * @OA\Post(
      *  path="/login",
      *  summary="Authenticate user",
      *  tags={"Auth"},
      *  @OA\RequestBody(
-     *     @OA\JsonContent(
-     *        required={"documentNumber","password"},
-     *        @OA\Property(property="documentNumber", type="string", format="text", example="11122233344"),
-     *        @OA\Property(property="password", type="string", format="text", example="mypass"),
-     *     ),
+     *     @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/AuthLoginRequest")),
      *  ),
-     *  @OA\Response(response=200, description="user authenticated"), 
+     *  @OA\Response(response="200", description="success", @OA\JsonContent(example={
+     *      "data": {
+     *          "access_token": "eyJ0e...",
+     *          "token_type": "bearer",
+     *          "expires_in": 3600
+     *      },
+     *      "meta": {
+     *          "user": {
+     *              "public_id": "20ce8f4a-506b-4ebd-ab10-756494da00de",
+     *              "name": "User Name Example",
+     *              "email": "email@example.com",
+     *              "document_number": "11122233344",
+     *              "type": "pf",
+     *              "updated_at": "2023-07-05T02:44:52.000000Z",
+     *              "created_at": "2023-07-05T02:44:52.000000Z",
+     *              "id": 3,
+     *          }
+     *      },
+     *  })),
      *  @OA\Response(response=401, description="document number or password is invalid")
      * )
      */
@@ -41,7 +55,7 @@ class AuthController extends Controller
         ]);
 
         if (empty($token)) {
-            throw new \Exception('document number or password is invalid', 401);
+            throw new \Exception('document number or password is invalid', Response::HTTP_UNAUTHORIZED);
         }
 
         $auth = auth()->guard(config('auth.defaults.guard'));
@@ -58,21 +72,26 @@ class AuthController extends Controller
     }
 
     /**
-     * @OA\POST(
+     * @OA\Post(
      *  path="/register",
      *  summary="Register new user",
      *  tags={"Auth"},
      *  @OA\RequestBody(
-     *     @OA\JsonContent(
-     *        required={"documentNumber","password"},
-     *        @OA\Property(property="name", type="string", example="João Neves"),
-     *        @OA\Property(property="email", type="email", example="joao@example.com"),
-     *        @OA\Property(property="documentNumber", type="string", example="11122233344"),
-     *        @OA\Property(property="password", type="string", example="mypass"),
-     *        @OA\Property(property="type", type="string", example="pf"),
-     *     ),
+     *     @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/AuthStoreRequest")),
      *  ),
-     *  @OA\Response(response=200, description="user created"), 
+     *  @OA\Response(response="200", description="success", @OA\JsonContent(example={
+     *      "data": {
+     *          "public_id": "20ce8f4a-506b-4ebd-ab10-756494da00de",
+     *          "name": "User Name Example",
+     *          "email": "email@example.com",
+     *          "document_number": "11122233344",
+     *          "type": "pf",
+     *          "updated_at": "2023-07-05T02:44:52.000000Z",
+     *          "created_at": "2023-07-05T02:44:52.000000Z",
+     *          "id": 3
+     *      },
+     *      "meta":{}
+     *  })),
      *  @OA\Response(response=500, description="error to create user")
      * )
      */
@@ -88,30 +107,31 @@ class AuthController extends Controller
         ]);
 
         if (empty($user)) {
-            throw new \Exception('error to create user', 500);
+            throw new \Exception('error to create user', Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         return ResponseResource::handle($user, [], Response::HTTP_CREATED);
     }
 
     /**
-     * @OA\GET(
+     * @OA\Get(
      *  path="/logout",
      *  summary="Logout user from session",
      *  tags={"Auth"},
-     *  security = {"jwt"},
-     *  @OA\Response(response=200, description="user created"), 
-     *  @OA\Response(response=500, description="error to create user")
+     *  security = {{"bearer":{}}},
+     *  @OA\Response(response="200", description="success", @OA\JsonContent(example={
+     *      "data":{"success":true},
+     *      "meta":{}
+     *  })),
+     *  @OA\Response(response="401", description="unauthorized", @OA\JsonContent(
+     *      ref="#/components/schemas/UnauthorizedResponse"
+     *  )),
      * )
      */
     public function logout(): JsonResponse
     {
-        try {
-            auth()->guard(config('auth.defaults.guard'))->logout(true);
-            auth()->guard(config('auth.defaults.guard'))->invalidate(true);
-        } catch (\Throwable $th) {
-            throw $th;
-        }
+        auth()->guard(config('auth.defaults.guard'))->logout(true);
+        auth()->guard(config('auth.defaults.guard'))->invalidate(true);
 
         return ResponseResource::handle(['success' => true], [], Response::HTTP_OK);
     }

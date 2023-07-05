@@ -16,19 +16,21 @@ class TransactionController extends Controller
     }
 
     /**
-     * @OA\POST(
+     * @OA\Post(
      *  path="/transactions",
      *  summary="Create new transaction",
      *  tags={"Transactions"},
-     *  security = {"jwt"},
+     *  security = {{"bearer":{}}},
      *  @OA\RequestBody(
-     *     @OA\JsonContent(
-     *        required={"payeeId","amount"},
-     *        @OA\Property(property="payeeId", type="string", format="text", example="31bf19b0-1a2c-11ee-be56-0242ac120002"),
-     *        @OA\Property(property="amount", type="numeric", format="text", example="100"),
-     *     ),
+     *     @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/TransactionStoreRequest")),
      *  ),
-     *  @OA\Response(response=200, description="transaction created"), 
+     *  @OA\Response(response="200", description="success", @OA\JsonContent(example={
+     *      "data":{},
+     *      "meta":{}
+     *  })),
+     *  @OA\Response(response="401", description="unauthorized", @OA\JsonContent(
+     *      ref="#/components/schemas/UnauthorizedResponse"
+     *  )),
      *  @OA\Response(response=500, description="error to create transaction")
      * )
      */

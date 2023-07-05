@@ -28,7 +28,7 @@ $ make build
 - Diagram (Wiki): [click](https://github.com/matmper/php-laravel-users-transactions/wiki/Diagrama)
 - Flowchart (Wiki): [click](https://github.com/matmper/php-laravel-users-transactions/wiki/Fluxograma---Transa%C3%A7%C3%B5es)
 - Database Relationship (Wiki): [click](https://github.com/matmper/php-laravel-users-transactions/wiki/Relacionamento-de-Dados)
-- Swagger: soon
+- Swagger: `./docs/swagger.json` (up application and access `http://localhost:81` to use SwaggerUI).
 
 ---
 ## Auth (development)
@@ -81,12 +81,12 @@ In development envrioment we offer two tests accounts, one is a commum user and 
 #### Tests - PHP Unit
 - Library: [PHP Unit 10](https://phpunit.de/getting-started/phpunit-10.html)
 - Use this commands for run testes
-    - `docker-compose exec webapp composer tests`
+    - `make tests`
 ---
 #### Code Sniffer & Code Beautifier
 Use this commands for keep code defaults:
-- PHP Code Sniffer
-    - `make phpcs`
+- PHP Code Check
+    - `make code-check`
 - PHP Code Beautifier and Fixer
     - `make phpcbf`
 ---
