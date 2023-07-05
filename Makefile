@@ -40,7 +40,7 @@ composer-update:
 	docker exec -it $(CONTAINER) composer update
 
 tests:
-	docker exec -it $(CONTAINER) ./vendor/bin/phpunit tests
+	docker exec -it $(CONTAINER) ./vendor/bin/phpunit tests --stop-on-failure
 
 config-cache:
 	docker exec -it $(CONTAINER) php artisan config:cache
