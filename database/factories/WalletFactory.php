@@ -26,13 +26,18 @@ class WalletFactory extends Factory
      */
     public function definition()
     {
-        $user = User::factory()->make();
+        $user = User::factory()->create();
+
+        $amount = fake()->randomNumber(3, true);
 
         return [
             'user_id' => $user->id,
-            'transaction_id' => Transaction::factory()->make(['payee_id' => $user->public_id]),
+            'transaction_id' => Transaction::factory()->create([
+                'payee_id' => $user->public_id,
+                'amount' => $amount,
+            ])->public_id,
             'name' => fake()->text(20),
-            'amount' => fake()->randomNumber(3, true),
+            'amount' => $amount,
             'created_at' => now(),
             'updated_at' => now(),
         ];

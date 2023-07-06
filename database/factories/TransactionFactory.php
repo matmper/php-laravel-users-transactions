@@ -27,8 +27,8 @@ class TransactionFactory extends Factory
     {
         return [
             'public_id' => \Illuminate\Support\Str::uuid()->toString(),
-            'payer_id' => User::factory()->make()->public_id,
-            'payee_id' => User::factory()->make()->public_id,
+            'payer_id' => User::factory()->create()->public_id,
+            'payee_id' => User::factory()->create()->public_id,
             'amount' => fake()->randomNumber(3, true),
             'created_at' => now(),
             'updated_at' => now(),

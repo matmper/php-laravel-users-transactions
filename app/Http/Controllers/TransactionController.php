@@ -24,7 +24,7 @@ class TransactionController extends Controller
      *  @OA\RequestBody(
      *     @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/TransactionStoreRequest")),
      *  ),
-     *  @OA\Response(response="200", description="success", @OA\JsonContent(example={
+     *  @OA\Response(response="201", description="created", @OA\JsonContent(example={
      *      "data":{},
      *      "meta":{}
      *  })),
@@ -49,6 +49,6 @@ class TransactionController extends Controller
             throw $th;
         }
 
-        return ResponseResource::handle($transaction, [], Response::HTTP_OK);
+        return ResponseResource::handle($transaction['transaction'], $transaction['message'], Response::HTTP_CREATED);
     }
 }

@@ -13,21 +13,13 @@ class AuthTest extends TestCase
     /**
      * @test
      */
-    public function testGetAuthLogin(): void
+    public function testPostAuthLogin(): void
     {
-        $this->auth();
-
-        $documentNumber = $this->generateFakeCpf();
         $password = fake()->password(8);
-
-        User::factory()->create([
-            'document_number' => $documentNumber,
-            'password' => Hash::make($password),
-            'type' => TypeEnum::PESSOA_FISICA,
-        ]);
+        $user = User::factory()->cpf()->create(['password' => Hash::make($password)]);
 
         $response = $this->postJson('/login', [
-            'documentNumber' => $documentNumber,
+            'documentNumber' => $user->document_number,
             'password' => $password,
         ]);
 
@@ -50,6 +42,61 @@ class AuthTest extends TestCase
                         'updated_at',
                     ],
                 ],
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function testPostAuthRegister(): void
+    {
+        $user = User::factory()->cpf()->make();
+
+        $response = $this->postJson('/register', [
+            'documentNumber' => $user->document_number,
+            'password' => fake()->password(8),
+            'name' => fake()->name(),
+            'email' => fake()->safeEmail(),
+            'type' => TypeEnum::PESSOA_FISICA,
+        ]);
+
+        $response->assertStatus(Response::HTTP_CREATED);
+        $response->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'public_id',
+                    'name',
+                    'email',
+                    'document_number',
+                    'type',
+                    'created_at',
+                    'updated_at',
+                ],
+                'meta' => [],
+            ]);
+    }
+
+    /**
+     * @test
+     */
+    public function testGetAuthLogout(): void
+    {
+        $password = fake()->password(8);
+
+        $user = User::factory()->cpf()->create(['password' => Hash::make($password)]);
+
+        $response = $this->postJson('/login', [
+            'documentNumber' => $user->document_number,
+            'password' => $password,
+        ]);
+        $response = json_decode($response->content());
+
+        $response = $this->getJson('/logout', ['Authorization' => "Bearer {$response->data->access_token}"]);
+
+        $response->assertStatus(Response::HTTP_OK);
+        $response->assertJsonStructure([
+                'data' => ['success'],
+                'meta' => [],
             ]);
     }
 }
