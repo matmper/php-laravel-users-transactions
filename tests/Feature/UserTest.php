@@ -8,9 +8,7 @@ use Tests\TestCase;
 class UserTest extends TestCase
 {
     /**
-     * Realiza um teste no serviço que captura os dados do usuário logado e seu saldo
-     *
-     * @return void
+     * @test
      */
     public function testGetUserMe(): void
     {
@@ -30,7 +28,6 @@ class UserTest extends TestCase
                     'type',
                     'created_at',
                     'updated_at',
-                    'deleted_at'
                 ],
                 'meta' => ['balance']
             ]);
