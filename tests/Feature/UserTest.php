@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
@@ -10,7 +10,7 @@ class UserTest extends TestCase
     /**
      * @test
      */
-    public function testGetUserMe(): void
+    public function test_get_user_me(): void
     {
         $this->auth();
 

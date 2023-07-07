@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
 use App\Models\User;
 use App\Models\Wallet;
@@ -12,7 +12,7 @@ class TransactionTest extends TestCase
     /**
      * @test
      */
-    public function testPostTransactionStore(): void
+    public function test_post_transaction_store(): void
     {
         $payer = $this->auth();
         $payee = User::factory()->cnpj()->create();

@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
 use App\Enums\TypeEnum;
 use App\Models\User;
@@ -13,7 +13,7 @@ class AuthTest extends TestCase
     /**
      * @test
      */
-    public function testPostAuthLogin(): void
+    public function test_post_auth_login(): void
     {
         $password = fake()->password(8);
         $user = User::factory()->cpf()->create(['password' => Hash::make($password)]);
@@ -48,7 +48,7 @@ class AuthTest extends TestCase
     /**
      * @test
      */
-    public function testPostAuthRegister(): void
+    public function test_post_auth_register(): void
     {
         $user = User::factory()->cpf()->make();
 
@@ -79,7 +79,7 @@ class AuthTest extends TestCase
     /**
      * @test
      */
-    public function testGetAuthLogout(): void
+    public function test_get_auth_logout(): void
     {
         $password = fake()->password(8);
 

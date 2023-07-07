@@ -33,9 +33,11 @@ trait CreatesApplication
      * @param array $attributes
      * @return User
      */
-    public function auth(array $attributes = []): User
+    public function auth(array $attributes = [], bool $isPj = false): User
     {
-        $user = User::factory()->cpf()->create($attributes);
+        $user =  $isPj
+            ?User::factory()->cnpj()->create($attributes)
+            : User::factory()->cpf()->create($attributes);
 
         $this->actingAs($user);
         

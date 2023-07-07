@@ -93,7 +93,7 @@ class TransactionService implements Transaction
     /**
      * Captura dados do usuário beneficiário (recebedor)
      *
-     * @param string $payeeId
+     * @param string $payeeId uuid
      * @return void
      */
     private function getPayee(string $payeeId): void
