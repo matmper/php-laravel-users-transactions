@@ -1,14 +1,10 @@
-name: "Action Users Transactions"
+name: "Action Laravel"
 
 on:
   push:
-    branches:
-      - 'develop'
-      - 'master'
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - '**'
-      - '!master'
+    branches: [ "main", "develop" ]
 
 jobs:
   laravel-tests:
@@ -19,20 +15,29 @@ jobs:
     - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
       with:
         php-version: '8.1'
-    - uses: actions/checkout@v2
-    - uses: php-actions/composer@v5
-    - uses: php-actions/phpunit@v3
+    - uses: actions/checkout@v3
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
     - name: Install Dependencies
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-    - name: Generate key
+    - name: Generate application key
       run: php artisan key:generate
     - name: Generate jwt key
       run: php artisan jwt:secret
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
-    - name: PHP Unit Test
-      run: ./vendor/bin/phpunit tests
-    - name: PHP CodeSniffer
-      run: php vendor/bin/phpcs --standard=psr2 --colors app/
+    - name: Validate php open ai
+      run: vendor/bin/openapi ./app 1> /dev/null
+    - name: Validate php stan
+      run: vendor/bin/phpstan analyse
+    - name: Validate php csn
+      run: vendor/bin/phpcs --standard=psr2 --colors app/
+    - name: Create Database
+      run: |
+        mkdir -p database
+        touch database/database.sqlite
+    - name: Execute tests (Unit and Feature tests) via PHPUnit
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: database/database.sqlite
+      run: vendor/bin/phpunit

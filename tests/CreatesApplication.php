@@ -19,11 +19,6 @@ trait CreatesApplication
 
         $app->make(Kernel::class)->bootstrap();
 
-        $database = Config::get('database.connections.mysql_test.database');
-        DB::statement("CREATE DATABASE IF NOT EXISTS `{$database}`");
-
-        Config::set('database.default', 'mysql_test');
-
         return $app;
     }
 

@@ -295,7 +295,7 @@ class BaseRepository
 
             if ($condition === '!=' && is_null($value)) {
                 $query->whereNotNull($keyExplode[0]);
-            } else if (is_null($value)) {
+            } elseif (is_null($value)) {
                 $query->whereNull($keyExplode[0]);
             } else {
                 $query->where($keyExplode[0], $condition, $value);
