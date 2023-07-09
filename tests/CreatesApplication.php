@@ -19,6 +19,8 @@ trait CreatesApplication
 
         $app->make(Kernel::class)->bootstrap();
 
+        $this->setConnection();
+
         return $app;
     }
 
@@ -37,5 +39,25 @@ trait CreatesApplication
         $this->actingAs($user);
         
         return $user;
+    }
+
+    /**
+     * Set database connection to tests
+     *
+     * @return void
+     */
+    private function setConnection(): void
+    {
+        $connection = config('database.default');
+
+        if ($connection !== 'mysql') {
+            return;
+        }
+
+        $databaseName = config('database.connections.mysql.database', 'userstransactions');
+        $databaseName .= '_tests';
+
+        DB::statement("CREATE DATABASE IF NOT EXISTS $databaseName");
+        Config::set('database.connections.mysql.database', $databaseName);
     }
 }
