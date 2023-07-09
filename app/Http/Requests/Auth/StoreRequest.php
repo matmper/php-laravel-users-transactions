@@ -2,9 +2,23 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Enums\TypeEnum;
+use App\Helpers\UtilsHelper;
 use App\Http\Requests\BaseRequest;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
+/**
+ * @OA\Schema(
+ *  schema="AuthStoreRequest",
+ *  required={"name", "email", "documentNumber", "password", "type"},
+ *  @OA\Property(property="name", type="string", example="User Name Example"),
+ *  @OA\Property(property="email", type="email", example="email@example.com"),
+ *  @OA\Property(property="documentNumber", type="string", example="11122233344"),
+ *  @OA\Property(property="password", type="string", example="mypass"),
+ *  @OA\Property(property="type", type="string", example="pf"),
+ * )
+ */
 class StoreRequest extends BaseRequest
 {
     /**
@@ -14,7 +28,7 @@ class StoreRequest extends BaseRequest
      */
     public function rules(Request $request): array
     {
-        $request->document_number = (string) preg_replace("/[^0-9]/", "", $request->documentNumber);
+        $request->document_number = UtilsHelper::onlyNumbers($request->documentNumber);
 
         return [
             'name' => ['required', 'string', 'min:1', 'max:75'],
@@ -28,7 +42,7 @@ class StoreRequest extends BaseRequest
             ],
             'email' => ['required', 'email', 'unique:users,email', 'max:150'],
             'password' => ['required', 'min:6'],
-            'type' => ['required', 'in:pf,pj']
+            'type' => ['required', Rule::in(TypeEnum::toArray())],
         ];
     }
 }

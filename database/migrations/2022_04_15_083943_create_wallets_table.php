@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('wallets', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id')->unsigned()->comment('usuário que enviou transação');
-            $table->uuid('transaction_id')->nullable()->comment('código público da transação');
+            $table->uuid('transaction_id')->comment('código público da transação');
             $table->string('name', 25)->comment('descrição da transação');
             $table->bigInteger('amount')->comment('valor em centavos da transação');
             $table->timestamp('created_at')->useCurrent();
@@ -25,11 +25,6 @@ return new class extends Migration
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('transaction_id')->references('public_id')->on('transactions');
         });
-
-        Artisan::call('db:seed', [
-            '--class' => 'WalletSeeder',
-            '--force' => true
-        ]);
     }
 
     /**

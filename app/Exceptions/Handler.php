@@ -2,6 +2,8 @@
 
 namespace App\Exceptions;
 
+use App\Http\Resources\ResponseResource;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
@@ -51,23 +53,23 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception, $data = [])
     {
-        $data = [
-            'code' => $exception->getCode(),
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-        ];
+        switch (get_class($exception)) {
+            case ModelNotFoundException::class:
+                throw new \Exception("result not found", Response::HTTP_NOT_FOUND);
+                break;
+        }
 
-        if (config('app.env') == 'local') {
-            $data['trace'] = $exception->getTrace();
+        $meta = ['code' => $exception->getCode()];
+
+        if (config('app.debug')) {
+            $meta['file'] = $exception->getFile();
+            $meta['line'] = $exception->getLine();
+            $meta['trace'] = $exception->getTrace();
         }
 
         $getCode = $exception->getCode();
         $getCode = $getCode && in_array($getCode, array_keys(Response::$statusTexts)) ? $getCode : 500;
 
-        return response()->json([
-            'success' => false,
-            'message' => $exception->getMessage(),
-            'data' => $data
-        ], $getCode);
+        return ResponseResource::error($exception->getMessage(), $meta, $getCode);
     }
 }

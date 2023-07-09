@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Enums\TypeEnum;
+use App\Models\Transaction;
+use App\Models\User;
+use App\Models\Wallet;
 use Illuminate\Database\Seeder;
-
-use DB;
-use Carbon\Carbon;
 
 class WalletSeeder extends Seeder
 {
@@ -16,22 +17,33 @@ class WalletSeeder extends Seeder
      */
     public function run()
     {
-        return DB::table('wallets')->insert([
+        $userPf = User::select('id', 'public_id')->where('type', TypeEnum::PESSOA_FISICA)->firstOrFail();
+        $transactionPf = Transaction::factory()->create([
+            'payer_id' => $userPf->public_id,
+            'payee_id' => $userPf->public_id,
+            'amount' => 4950,
+        ]);
+
+        $userPj = User::select('id', 'public_id')->where('type', TypeEnum::PESSOA_JURIDICA)->firstOrFail();
+        $transactionPj = Transaction::factory()->create([
+            'payer_id' => $userPj->public_id,
+            'payee_id' => $userPj->public_id,
+            'amount' => 150,
+        ]);
+        
+        Wallet::factory(2)->sequence(
             [
-                'id' => 1,
-                'user_id' => 1,
+                'transaction_id' => $transactionPf->public_id,
+                'user_id' => $userPf->id,
                 'name' => 'cortesia pf',
                 'amount' => 4950,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ], [
-                'id' => 2,
-                'user_id' => 2,
+            ],
+            [
+                'transaction_id' =>  $transactionPj->public_id,
+                'user_id' => $userPj->id,
                 'name' => 'cortesia pj',
                 'amount' => 150,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
             ]
-        ]);
+        )->create();
     }
 }

@@ -11,32 +11,28 @@
 
 ### Install & Requeriments
 #### Requeriments
-- Laravel 9.x Requeriments
-- Docker Installed
+- Docker
+- Docker Compose
 ---
 #### Install
 - Clone this repository on a clean folder: [Github](https://github.com/matmper/php-laravel-users-transactions)
-- Execute your docker
-- Run this commands: 
+- Start docker and run this commands: 
 ```base
-$ docker-compose up
-$ docker-compose exec webapp cp .env.example .env 
-$ docker-compose exec webapp composer install 
-$ docker-compose exec webapp php artisan key:generate 
-$ docker-compose exec webapp php artisan jwt:secret
-$ docker-compose exec webapp php artisan migrate
+$ cp .env.example .env
+$ make build
 ```
+- Use `make up` to start or `make down` to stop
+
 ---
 ## Documentation
-- Routes (Postman): [show collection](https://documenter.getpostman.com/view/8724744/Uyr4LL6b)
 - Diagram (Wiki): [click](https://github.com/matmper/php-laravel-users-transactions/wiki/Diagrama)
 - Flowchart (Wiki): [click](https://github.com/matmper/php-laravel-users-transactions/wiki/Fluxograma---Transa%C3%A7%C3%B5es)
 - Database Relationship (Wiki): [click](https://github.com/matmper/php-laravel-users-transactions/wiki/Relacionamento-de-Dados)
+- Swagger: `./docs/swagger.json` (up application and access `http://localhost:81` to use SwaggerUI).
 
 ---
 ## Auth (development)
 In development envrioment we offer two tests accounts, one is a commum user and other one is a store.
-You can user [POST] /auth to create a new user.
 
 - User - PF (credits: R$49,50)
 ```json
@@ -56,25 +52,24 @@ You can user [POST] /auth to create a new user.
 ---
 #### Routes
 - Attention to the new patterns d of route files:
-    - `routes/web.php` is the public route: www.yoursite.com/public/{route} (no auth)
-    - `routes/api.php` is the root api path: www.yoursite.com/{route} (auth)
+    - `routes/web.php` for public routes (no auth)
+    - `routes/api.php` for private api routes (auth)
 
 - Use Laravel patterns to use all routes:
 
 | Verb | Path | Action | Route Name | Desc |
 |--|--|--|--|--|
-| GET | /user | index | user.index | get all users |
-| GET | /user/create | create | user.create | view to create user |
-| POST | /user | store | user.store | save new user |
-| GET | /user/{id} | show | user.show | get and user |
-| GET | /user/{id}/edit | edit | user.edit | get user data to edit |
-| PATCH/PUT | /user/{id} | update | user.update | save new user data |
-| DELETE | /user/{id} | destroy | user.destroy | delete an user |
+| GET | /users | index | user.index | get all users |
+| GET | /users/create | create | user.create | view to create user |
+| POST | /users | store | user.store | save new user |
+| GET | /users/{id} | show | user.show | get and user |
+| GET | /users/{id}/edit | edit | user.edit | get user data to edit |
+| PATCH/PUT | /users/{id} | update | user.update | save new user data |
+| DELETE | /users/{id} | destroy | user.destroy | delete an user |
 
 ---
 #### Create models
 - You can use [reliese/laravel](https://github.com/reliese/laravel) library to generate a new model
-- Get your connection name in `database.php` file
 - To generate this, use this command:
     - ```docker-compose exec webapp php artisan code:models --table=yourtable```
 ---
@@ -84,16 +79,16 @@ You can user [POST] /auth to create a new user.
     - `docker-compose exec webapp php artisan repository:create all`
 ---
 #### Tests - PHP Unit
-- Library: [PHP Unit 9](https://phpunit.de/getting-started/phpunit-9.html)
+- Library: [PHP Unit 10](https://phpunit.de/getting-started/phpunit-10.html)
 - Use this commands for run testes
-    - `docker-compose exec webapp composer tests`
+    - `make tests`
 ---
 #### Code Sniffer & Code Beautifier
 Use this commands for keep code defaults:
-- PHP Code Sniffer
-    - `docker-compose exec webapp php vendor/bin/phpcs`
+- PHP Code Check
+    - `make code-check`
 - PHP Code Beautifier and Fixer
-    - `docker-compose exec webapp php vendor/bin/phpcbf`
+    - `make phpcbf`
 ---
 ## License
 This repository use [MIT License](https://choosealicense.com/licenses/mit/)

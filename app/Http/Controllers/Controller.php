@@ -2,26 +2,28 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 
+/**
+ * @OA\Info(
+ *     title="Users Transactions API",
+ *     version="0.1"
+ * ),
+ *  @OA\Server(
+ *      description="Development in local server",
+ *      url="http://localhost:80"
+ *  ),
+ * @OA\SecurityScheme(
+ *      securityScheme="bearer",
+ *      in="header",
+ *      name="Authorization",
+ *      type="http",
+ *      scheme="Bearer",
+ *      bearerFormat="JWT",
+ * ),
+ */
 class Controller extends BaseController
 {
-    //use DispatchesJobs, ValidatesRequests;
-
-    /**
-     * Método para responder um json ao front end com padrão epics
-     *
-     * @param string $message
-     * @param array|null $data
-     * @param integer|null $statusCode
-     * @return object
-     */
-    protected function resp(
-        string $message,
-        ?array $data = null,
-        ?int $statusCode = 200
-    ): object {
-        return response()
-            ->json(['success' => true, 'message' => $message, 'data' => $data], $statusCode);
-    }
+    use ValidatesRequests;
 }
