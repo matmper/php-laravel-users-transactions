@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Enums\RoleEnum;
 use App\Enums\TypeEnum;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -41,6 +42,8 @@ class AuthTest extends TestCase
                         'created_at',
                         'updated_at',
                     ],
+                    'roles' => [],
+                    'permissions' => [],
                 ],
             ]);
     }
@@ -84,14 +87,15 @@ class AuthTest extends TestCase
         $password = fake()->password(8);
 
         $user = User::factory()->cpf()->create(['password' => Hash::make($password)]);
+        $user->assignRole(RoleEnum::USER);
 
-        $response = $this->postJson('/login', [
+        $auth = $this->postJson('/login', [
             'documentNumber' => $user->document_number,
             'password' => $password,
         ]);
-        $response = json_decode($response->content());
+        $auth = json_decode($auth->content());
 
-        $response = $this->getJson('/logout', ['Authorization' => "Bearer {$response->data->access_token}"]);
+        $response = $this->getJson('/logout', ['Authorization' => "Bearer {$auth->data->access_token}"]);
 
         $response->assertStatus(Response::HTTP_OK);
         $response->assertJsonStructure([

@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Exceptions\Transactions\BankAuthorizeException;
+use App\Exceptions\Transactions\InsufficienteBalanceException;
 use App\Interfaces\Transaction;
 use App\Repositories\TransactionRepository;
 use Illuminate\Support\Facades\DB;
@@ -131,7 +133,7 @@ class TransactionService implements Transaction
         $this->balance = $this->walletService->getBalance($this->payer->id);
 
         if ($this->balance < $this->amount) {
-            throw new \Exception("insufficient ballance", 402);
+            throw new InsufficienteBalanceException;
         }
     }
 
@@ -163,7 +165,7 @@ class TransactionService implements Transaction
         $response = $client->get('https://run.mocky.io/v3/' . config('keys.center_bank'));
 
         if ($response->getStatusCode() !== Response::HTTP_OK) {
-            throw new \Exception('transaction not authorized into bank api', $response->getStatusCode());
+            throw new BankAuthorizeException($response->getStatusCode());
         };
     }
 

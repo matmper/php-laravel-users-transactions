@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\RoleEnum;
+use App\Enums\TypeEnum;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\StoreRequest;
 use App\Http\Resources\ResponseResource;
@@ -59,6 +61,7 @@ class AuthController extends Controller
         }
 
         $auth = auth()->guard(config('auth.defaults.guard'));
+        $user = $auth->user();
  
         return ResponseResource::handle(
             [
@@ -66,7 +69,11 @@ class AuthController extends Controller
                 'token_type' => 'bearer',
                 'expires_in' => $auth->factory()->getTTL() * 60,
             ],
-            ['user' => $auth->user()],
+            [
+                'user' => $user,
+                'roles' => $user->roles()->pluck('name'),
+                'permissions' => $user->getAllPermissions()->pluck('name'),
+            ],
             Response::HTTP_OK
         );
     }
@@ -108,6 +115,17 @@ class AuthController extends Controller
 
         if (empty($user)) {
             throw new \Exception('error to create user', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        $user->assignRole(RoleEnum::USER);
+
+        switch ($user->type) {
+            case TypeEnum::PESSOA_FISICA:
+                $user->assignRole(RoleEnum::USER_PF);
+                break;
+            case TypeEnum::PESSOA_JURIDICA:
+                $user->assignRole(RoleEnum::USER_PJ);
+                break;
         }
 
         return ResponseResource::handle($user, [], Response::HTTP_CREATED);

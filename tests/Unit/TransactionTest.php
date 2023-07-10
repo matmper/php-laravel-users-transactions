@@ -54,7 +54,7 @@ class TransactionTest extends TestCase
 
         $transactionService = app(TransactionService::class);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(\App\Exceptions\Transactions\InsufficienteBalanceException::class);
 
         $transactionService->handler($userPayee->public_id, $transactionAmount)
             ->transaction()
@@ -76,7 +76,7 @@ class TransactionTest extends TestCase
 
         $transactionService = app(TransactionService::class);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(\App\Exceptions\Transactions\UserTypePfException::class);
 
         $transactionService->handler($userPayee->public_id, $transactionAmount)
             ->transaction()

@@ -145,6 +145,33 @@
                 ]
             }
         },
+        "/": {
+            "post": {
+                "tags": [
+                    "Pages"
+                ],
+                "summary": "Home page or index",
+                "operationId": "0b18f58f79c15f03e64f3bb76e959188",
+                "responses": {
+                    "201": {
+                        "description": "created",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "data": {
+                                        "name": "Users Transactions"
+                                    },
+                                    "meta": {
+                                        "version": "1"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/transactions": {
             "post": {
                 "tags": [
@@ -162,14 +189,24 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "success",
+                    "201": {
+                        "description": "created",
                         "content": {
                             "application/json": {
                                 "schema": {},
                                 "example": {
-                                    "data": [],
-                                    "meta": []
+                                    "data": {
+                                        "public_id": "7aab891a-48b1-4f9f-b391-9c8567ef5eda",
+                                        "amount": 1,
+                                        "payer": "072f7f8c-e50e-4d03-9a32-3f7e33a28c76",
+                                        "payee": "610be6d0-0759-4beb-8e7a-9d27f288c1c0"
+                                    },
+                                    "meta": {
+                                        "success": true,
+                                        "response": {
+                                            "message": "Success"
+                                        }
+                                    }
                                 }
                             }
                         }

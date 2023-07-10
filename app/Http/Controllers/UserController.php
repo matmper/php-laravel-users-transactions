@@ -44,6 +44,10 @@ class UserController extends Controller
         $user = auth()->guard(config('auth.defaults.guard'))->user();
         $balance = $this->walletService->getBalance($user->id);
 
-        return ResponseResource::handle($user, ['balance' => $balance], Response::HTTP_OK);
+        return ResponseResource::handle($user, [
+            'roles' => $user->roles()->pluck('name'),
+            'permissions' => $user->getAllPermissions()->pluck('name'),
+            'balance' => $balance,
+        ], Response::HTTP_OK);
     }
 }

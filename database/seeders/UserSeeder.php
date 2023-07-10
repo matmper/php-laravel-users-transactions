@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\RoleEnum;
 use App\Enums\TypeEnum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -28,5 +29,18 @@ class UserSeeder extends Seeder
                 'type' => TypeEnum::PESSOA_JURIDICA
             ]
         )->create();
+
+        $users = User::get();
+
+        foreach ($users as $user) {
+            switch ($user->type) {
+                case TypeEnum::PESSOA_FISICA:
+                    $user->assignRole([RoleEnum::USER, RoleEnum::USER_PF]);
+                    break;
+                case TypeEnum::PESSOA_JURIDICA:
+                    $user->assignRole([RoleEnum::USER, RoleEnum::USER_PJ]);
+                    break;
+            }
+        }
     }
 }

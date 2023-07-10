@@ -25,7 +25,7 @@ tty:
 	docker exec -it $(CONTAINER) bash
 
 migrate:
-	docker exec -it $(CONTAINER) php artisan migrate
+	docker exec -it $(CONTAINER) php artisan migrate --seed --seeder=RolesAndPermissionsSeeder
 
 migrate-rollback:
 	docker exec -it $(CONTAINER) php artisan migrate:rollback

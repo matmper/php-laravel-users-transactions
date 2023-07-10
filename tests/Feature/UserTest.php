@@ -29,7 +29,11 @@ class UserTest extends TestCase
                     'created_at',
                     'updated_at',
                 ],
-                'meta' => ['balance']
+                'meta' => [
+                    'roles' => [],
+                    'permissions' => [],
+                    'balance',
+                ],
             ]);
         $this->assertIsInt($content->meta->balance);
     }
