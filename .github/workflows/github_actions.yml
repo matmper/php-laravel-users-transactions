@@ -45,7 +45,6 @@ jobs:
 
     - name: Prepare Laravel Application
       run: |
-        set ENV DB_HOST=localhost
         cp .env.example .env
         php artisan key:generate
         php artisan jwt:secret -n
