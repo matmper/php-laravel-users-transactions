@@ -6,7 +6,7 @@ use App\Http\Requests\BaseRequest;
 
 /**
  * @OA\Schema(
- *  schema="UserStoreRequest",
+ *  schema="UserUpdateRequest",
  *  required={"name", "email", "roles"},
  *  @OA\Property(property="name", type="string", example="User Name Example"),
  *  @OA\Property(property="email", type="email", example="email@example.com"),
@@ -15,7 +15,7 @@ use App\Http\Requests\BaseRequest;
  *  @OA\Property(property="password_confirmation", type="string", example="mypass"),
  * )
  */
-class UserStoreRequest extends BaseRequest
+class UserUpdateRequest extends BaseRequest
 {
     /**
      * Get the validation rules that apply to the request.

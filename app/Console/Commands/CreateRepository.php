@@ -36,9 +36,9 @@ class CreateRepository extends Command
     /**
      * Execute the console command.
      *
-     * @return int
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         $this->modelName = $this->argument('modelName');
 

@@ -126,7 +126,7 @@ class TransactionService implements Transaction
     {
         $this->balance = $this->walletService->getBalance($this->payer->id);
 
-        if ($this->balance < $this->amount) { 
+        if ($this->balance < $this->amount) {
             throw new InsufficienteBalanceException;
         }
     }

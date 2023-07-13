@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\User\UserStoreRequest;
+use App\Http\Requests\User\UserUpdateRequest;
 use App\Http\Resources\ResponseResource;
 use App\Repositories\UserRepository;
 use App\Services\WalletService;
@@ -113,7 +113,7 @@ class UserController extends Controller
      *      @OA\Schema(type="integer")
      *   ),
      *   @OA\RequestBody(
-     *      @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/UserStoreRequest")),
+     *      @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/UserUpdateRequest")),
      *   ),
      *   @OA\Response(response="200", description="success", @OA\JsonContent(example={
      *      "data":{
@@ -134,7 +134,7 @@ class UserController extends Controller
      *   )),
      * )
      */
-    public function update(UserStoreRequest $request, int $id): JsonResponse
+    public function update(UserUpdateRequest $request, int $id): JsonResponse
     {
         $data = $request->only('name', 'email');
 

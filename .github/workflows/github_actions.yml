@@ -45,6 +45,7 @@ jobs:
 
     - name: Prepare Laravel Application
       run: |
+        set ENV DB_HOST=localhost
         cp .env.example .env
         php artisan key:generate
         php artisan jwt:secret -n
@@ -52,13 +53,13 @@ jobs:
         php artisan cache:clear
 
     - name: Run Swagger suit
-      run: php ./vendor/bin/openapi ./app 1> /dev/null
+      run: composer swagger-check
       
     - name: Run PHPStan suit
-      run: php ./vendor/bin/phpstan analyse
+      run: composer phpstan
 
     - name: Run PHP Code Sniffer suit
-      run: php ./vendor/bin/phpcs
+      run: composer phpcs
 
     - name: Run PHP Unit Tests suite
-      run: php ./vendor/bin/phpunit tests --stop-on-failure
+      run: composer tests
