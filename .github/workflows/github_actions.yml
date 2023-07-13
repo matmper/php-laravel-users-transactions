@@ -45,7 +45,7 @@ jobs:
 
     - name: Prepare Laravel Application
       run: |
-        cp .env.ci .env
+        cp .env.example .env
         php artisan key:generate
         php artisan jwt:secret -n
         php artisan config:cache
