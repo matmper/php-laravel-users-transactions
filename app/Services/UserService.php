@@ -2,26 +2,23 @@
 
 namespace App\Services;
 
+use App\Models\User;
 use App\Repositories\UserRepository;
 
 class UserService
 {
-    /**
-     * Public construct
-     *
-     * @param UserRepository $userRepository
-     */
     public function __construct(private UserRepository $userRepository)
     {
+        //
     }
 
     /**
-     * Retorna dados pessoais do usuário para realizar uma transação
+     * Returns personal user data by wallet public id (uuid)
      *
      * @param string $publicId
-     * @return object
+     * @return User
      */
-    public function getUserData(string $publicId): object
+    public function getUserData(string $publicId): User
     {
         return $this->userRepository->firstOrFail(
             ['public_id' => $publicId],

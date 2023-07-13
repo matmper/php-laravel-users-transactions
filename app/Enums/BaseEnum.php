@@ -7,7 +7,7 @@ use ReflectionClass;
 class BaseEnum
 {
     /**
-     * Retorna todos as constantes em array
+     * Returns all constants into array
      *
      * @return array
      */
@@ -17,7 +17,7 @@ class BaseEnum
     }
 
     /**
-     * Transforma a array keys em array
+     * Return all constants keys into array
      *
      * @return void
      */
@@ -27,7 +27,7 @@ class BaseEnum
     }
 
     /**
-     * Retorna o valor da constante
+     * Return all constants values
      *
      * @param mixed $value
      * @return void

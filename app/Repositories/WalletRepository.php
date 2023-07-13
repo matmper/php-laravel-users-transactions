@@ -12,7 +12,7 @@ class WalletRepository extends BaseRepository
     protected $model = Wallet::class;
 
     /**
-     * Captura o saldo de um usuário, realizando a soma
+     * Get and sum user wallet balance
      *
      * @param integer $userId
      * @return integer

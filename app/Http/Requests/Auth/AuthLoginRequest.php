@@ -6,13 +6,13 @@ use App\Http\Requests\BaseRequest;
 
 /**
  * @OA\Schema(
- *  schema="AuthLoginRequest",
+ *  schema="AuthAuthLoginRequest",
  *  required={"documentNumber","password"},
- *  @OA\Property(property="documentNumber", type="string", format="text", example="11122233344"),
+ *  @OA\Property(property="documentNumber", type="string", format="text", example="11122233301"),
  *  @OA\Property(property="password", type="string", format="text", example="mypass"),
  * )
  */
-class LoginRequest extends BaseRequest
+class AuthLoginRequest extends BaseRequest
 {
     /**
      * Get the validation rules that apply to the request.

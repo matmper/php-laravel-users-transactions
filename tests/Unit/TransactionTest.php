@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use App\Enums\RoleEnum;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Services\TransactionService;
@@ -15,7 +16,7 @@ class TransactionTest extends TestCase
      */
     public function test_transaction_service_store(): void
     {
-        $user = $this->auth();
+        $user = $this->auth([], [RoleEnum::USER, RoleEnum::USER_PF]);
         $userPayee = User::factory()->cnpj()->create();
 
         $balance = fake()->randomNumber(3, true);
@@ -44,7 +45,7 @@ class TransactionTest extends TestCase
      */
     public function test_transaction_service_store_balance_exception(): void
     {
-        $user = $this->auth();
+        $user = $this->auth([], [RoleEnum::USER, RoleEnum::USER_PF]);
         $userPayee = User::factory()->cnpj()->create();
 
         $balance = fake()->randomNumber(2, true);
@@ -54,7 +55,7 @@ class TransactionTest extends TestCase
 
         $transactionService = app(TransactionService::class);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(\App\Exceptions\Transactions\InsufficienteBalanceException::class);
 
         $transactionService->handler($userPayee->public_id, $transactionAmount)
             ->transaction()
@@ -66,7 +67,7 @@ class TransactionTest extends TestCase
      */
     public function test_transaction_service_store_send_transaction_exception(): void
     {
-        $user = $this->auth(isPj:true);
+        $user = $this->auth([], [RoleEnum::USER, RoleEnum::USER_PF], isPj:true);
         $userPayee = User::factory()->cpf()->create();
 
         $balance = fake()->randomNumber(3, true);
@@ -76,7 +77,7 @@ class TransactionTest extends TestCase
 
         $transactionService = app(TransactionService::class);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(\App\Exceptions\Transactions\UserTypePfException::class);
 
         $transactionService->handler($userPayee->public_id, $transactionAmount)
             ->transaction()

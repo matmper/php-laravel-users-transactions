@@ -9,13 +9,14 @@ namespace App\Models;
 use App\Enums\TypeEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as UserAuthenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Auth\Authenticatable as AuthenticableTrait;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * Class User
@@ -34,16 +35,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property Collection|Transaction[] $transactions
  * @property Collection|Wallet[] $wallets
  *
- * @package App\Models
+ * @package App\Authenticatable
  */
-class User extends Model implements Authenticatable, JWTSubject
+class User extends UserAuthenticatable implements Authenticatable, JWTSubject
 {
-    use Notifiable, AuthenticableTrait, SoftDeletes, HasFactory;
+    use Notifiable, AuthenticableTrait, SoftDeletes, HasFactory, HasRoles;
     
     protected $table = 'users';
 
     protected $hidden = [
-        'password'
+        'password',
+        'roles',
+        'permissions',
     ];
 
     protected $fillable = [
@@ -86,7 +89,7 @@ class User extends Model implements Authenticatable, JWTSubject
     }
 
     /**
-     * Retorna true se a pessoa for pessoa física
+     * Check if user type is "pessoa física"
      *
      * @return boolean
      */
@@ -96,12 +99,12 @@ class User extends Model implements Authenticatable, JWTSubject
     }
 
     /**
-     * Retorna true se a pessoa for pessoa jurídica
+     * Check if user type is "pessoa jurídica"
      *
      * @return boolean
      */
     public function getIsPjAttribute(): bool
     {
-        return $this->type ===  TypeEnum::PESSOA_JURIDICA;
+        return $this->type === TypeEnum::PESSOA_JURIDICA;
     }
 }

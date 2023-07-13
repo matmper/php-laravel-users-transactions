@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -9,14 +10,11 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', function () {   
-    return response()->json([
-        'data' => ['message' => 'users transactions'],
-        'meta' => ['version' => 1]
-    ]);
-})->name('home');
+Route::controller(PageController::class)->group(function() {
+    Route::get('/', 'index');
+}); 
 
-Route::controller(AuthController::class)->name('auth')->group(function() {
-    Route::post('/login', 'login')->name('.login');
-    Route::post('/register', 'store')->name('.store');
+Route::controller(AuthController::class)->group(function() {
+    Route::post('/login', 'login');
+    Route::post('/register', 'store');
 });

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\RoleEnum;
 use App\Enums\TypeEnum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -16,17 +17,34 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        User::factory(2)->sequence(
+        User::factory(3)->sequence(
             [
-                'document_number' => '11122233344',
+                'document_number' => '11122233300',
                 'password' => Hash::make('mypass'), 
                 'type' => TypeEnum::PESSOA_FISICA
             ],
             [
-                'document_number' => '11222333000144',
+                'document_number' => '11122233301',
+                'password' => Hash::make('mypass'), 
+                'type' => TypeEnum::PESSOA_FISICA
+            ],
+            [
+                'document_number' => '11222333000101',
                 'password' => Hash::make('mypass'),
                 'type' => TypeEnum::PESSOA_JURIDICA
             ]
         )->create();
+        
+        $roles = [
+            [RoleEnum::ADMIN],
+            [RoleEnum::USER, RoleEnum::USER_PF],
+            [RoleEnum::USER, RoleEnum::USER_PJ],
+        ];
+
+        $users = User::get();
+
+        foreach ($users as $key => $user) {
+            $user->assignRole($roles[$key]);
+        }
     }
 }

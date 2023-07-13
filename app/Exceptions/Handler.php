@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Helpers\UtilsHelper;
 use App\Http\Resources\ResponseResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Symfony\Component\HttpFoundation\Response;
@@ -67,9 +68,11 @@ class Handler extends ExceptionHandler
             $meta['trace'] = $exception->getTrace();
         }
 
+        $errors = UtilsHelper::isJson($exception->getMessage()) ?: [$exception->getMessage()];
+
         $getCode = $exception->getCode();
         $getCode = $getCode && in_array($getCode, array_keys(Response::$statusTexts)) ? $getCode : 500;
 
-        return ResponseResource::error($exception->getMessage(), $meta, $getCode);
+        return ResponseResource::error($errors, $meta, $getCode);
     }
 }

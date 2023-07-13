@@ -37,7 +37,7 @@ In development envrioment we offer two tests accounts, one is a commum user and 
 - User - PF (credits: R$49,50)
 ```json
 {
-    "documentNumber": "11122233344",
+    "documentNumber": "11122233301",
     "password": "mypass"
 }
 ```
@@ -45,7 +45,7 @@ In development envrioment we offer two tests accounts, one is a commum user and 
 - Store - PJ (credits: R$1,50)
 ```json
 {
-    "documentNumber": "11222333000144",
+    "documentNumber": "11222333000101",
     "password": "mypass"
 }
 ```

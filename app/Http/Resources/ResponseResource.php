@@ -28,7 +28,7 @@ class ResponseResource extends JsonResource
     /**
      * @OA\Schema(
      *  schema="UnauthorizedResponse",
-     *  @OA\Property(property="error", type="string", example="Unauthorized [Authenticate]"),
+     *  @OA\Property(property="errors", type="array", example={Unauthorized [Authenticate]}),
      *  @OA\Property(property="meta", type="array", @OA\Items(
      *      @OA\Property(
      *         property="code",
@@ -38,10 +38,10 @@ class ResponseResource extends JsonResource
      *  )),
      * )
      */
-    public static function error(string $error, array $meta, int $statusCode): JsonResponse
+    public static function error(array $errors, array $meta, int $statusCode): JsonResponse
     {
         return response()->json([
-            'error' => $error,
+            'errors' => $errors,
             'meta' => $meta,
         ], $statusCode);
     }
