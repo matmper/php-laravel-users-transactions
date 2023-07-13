@@ -14,16 +14,16 @@ class PageController extends Controller
     }
 
     /**
-     * @OA\Post(
+     * @OA\Get(
      *  path="/",
      *  summary="Home page or index",
-     *  tags={"Pages"},
-     *  @OA\Response(response="201", description="created", @OA\JsonContent(example={
+     *  tags={"Page"},
+     *  @OA\Response(response="200", description="created", @OA\JsonContent(example={
      *      "data": {
      *          "name": "Users Transactions"
      *      },
      *      "meta": {
-     *          "version": "1"
+     *          "version": 1
      *      }
      *  })),
      * )

@@ -4,7 +4,11 @@ namespace App\Enums;
 
 class PermissionEnum extends BaseEnum
 {
-    const AUTH_GET_LOGOUT = 'auth_get_logout';
-    const USER_GET_ME = 'user_get_me';
-    const TRANSACTION_POST_STORE = 'transaction_post_store';
+    const AUTH_LOGOUT = 'auth_get_logout';
+
+    const USER_ME = 'user_get_me';
+    const USER_SHOW = 'user_get_show';
+    const USER_UPDATE = 'user_patch_update';
+
+    const TRANSACTION_STORE = 'transaction_post_store';
 }

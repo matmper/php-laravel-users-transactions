@@ -57,7 +57,8 @@ class AuthTest extends TestCase
 
         $response = $this->postJson('/register', [
             'documentNumber' => $user->document_number,
-            'password' => fake()->password(8),
+            'password' => $password = fake()->password(8),
+            'password_confirmation' => $password,
             'name' => fake()->name(),
             'email' => fake()->safeEmail(),
             'type' => TypeEnum::PESSOA_FISICA,

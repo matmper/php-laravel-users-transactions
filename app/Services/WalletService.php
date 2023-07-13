@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Wallet;
 use App\Repositories\WalletRepository;
 
 class WalletService
@@ -11,7 +12,7 @@ class WalletService
     }
 
     /**
-     * Retorna o saldo do usuário em centavos (100 = R$1,00)
+     * Get wallet balance in reais (100 = R$1,00)
      *
      * @param integer $userId
      * @return integer
@@ -22,13 +23,13 @@ class WalletService
     }
 
     /**
-     * Realiza a ponta com o repository e insere saldo
+     * Create a new wallet
      *
      * @param array $data
-     * @return object|null
+     * @return Wallet|null
      */
-    public function insert(array $data): ?object
+    public function create(array $data): ?Wallet
     {
-        return $this->walletRepository->insert($data);
+        return $this->walletRepository->create($data);
     }
 }

@@ -12,7 +12,7 @@ use App\Http\Requests\BaseRequest;
  *  @OA\Property(property="amount", type="numeric", format="text", example="100"),
  * )
  */
-class StoreRequest extends BaseRequest
+class TransactionStoreRequest extends BaseRequest
 {
     /**
      * Get the validation rules that apply to the request.

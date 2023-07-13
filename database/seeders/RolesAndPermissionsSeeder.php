@@ -16,13 +16,18 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // create permissions
         $roles = [
-            RoleEnum::ADMIN => array_values(PermissionEnum::toArray()),
+            RoleEnum::ADMIN => [
+                PermissionEnum::AUTH_LOGOUT,
+                PermissionEnum::USER_ME,
+                PermissionEnum::USER_SHOW,
+                PermissionEnum::USER_UPDATE,
+            ],
             RoleEnum::USER => [
-                PermissionEnum::AUTH_GET_LOGOUT,
-                PermissionEnum::USER_GET_ME,
+                PermissionEnum::AUTH_LOGOUT,
+                PermissionEnum::USER_ME,
             ],
             RoleEnum::USER_PF => [
-                PermissionEnum::TRANSACTION_POST_STORE,
+                PermissionEnum::TRANSACTION_STORE,
             ],
             RoleEnum::USER_PJ => [
                 //

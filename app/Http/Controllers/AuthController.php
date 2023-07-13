@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Enums\RoleEnum;
 use App\Enums\TypeEnum;
-use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Requests\Auth\StoreRequest;
+use App\Http\Requests\Auth\AuthLoginRequest;
+use App\Http\Requests\Auth\AuthStoreRequest;
 use App\Http\Resources\ResponseResource;
 use App\Repositories\UserRepository;
 use Illuminate\Http\JsonResponse;
@@ -25,7 +25,7 @@ class AuthController extends Controller
      *  summary="Authenticate user",
      *  tags={"Auth"},
      *  @OA\RequestBody(
-     *     @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/AuthLoginRequest")),
+     *     @OA\MediaType(mediaType="application/json", @OA\Schema(ref="#/components/schemas/AuthAuthLoginRequest")),
      *  ),
      *  @OA\Response(response="200", description="success", @OA\JsonContent(example={
      *      "data": {
@@ -38,7 +38,7 @@ class AuthController extends Controller
      *              "public_id": "20ce8f4a-506b-4ebd-ab10-756494da00de",
      *              "name": "User Name Example",
      *              "email": "email@example.com",
-     *              "document_number": "11122233344",
+     *              "document_number": "11122233301",
      *              "type": "pf",
      *              "updated_at": "2023-07-05T02:44:52.000000Z",
      *              "created_at": "2023-07-05T02:44:52.000000Z",
@@ -49,7 +49,7 @@ class AuthController extends Controller
      *  @OA\Response(response=401, description="document number or password is invalid")
      * )
      */
-    public function login(LoginRequest $request): JsonResponse
+    public function login(AuthLoginRequest $request): JsonResponse
     {
         $token = auth()->guard(config('auth.defaults.guard'))->attempt([
             'document_number' => \App\Helpers\UtilsHelper::onlyNumbers($request->documentNumber),
@@ -91,7 +91,7 @@ class AuthController extends Controller
      *          "public_id": "20ce8f4a-506b-4ebd-ab10-756494da00de",
      *          "name": "User Name Example",
      *          "email": "email@example.com",
-     *          "document_number": "11122233344",
+     *          "document_number": "11122233301",
      *          "type": "pf",
      *          "updated_at": "2023-07-05T02:44:52.000000Z",
      *          "created_at": "2023-07-05T02:44:52.000000Z",
@@ -102,9 +102,9 @@ class AuthController extends Controller
      *  @OA\Response(response=500, description="error to create user")
      * )
      */
-    public function store(StoreRequest $request): JsonResponse
+    public function store(AuthStoreRequest $request): JsonResponse
     {
-        $user = $this->userRepository->insert([
+        $user = $this->userRepository->create([
             'public_id' => \Illuminate\Support\Str::uuid()->toString(),
             'name' => ucwords($request->name),
             'email' => strtolower($request->email),
@@ -134,7 +134,7 @@ class AuthController extends Controller
     /**
      * @OA\Get(
      *  path="/logout",
-     *  summary="Logout user from session",
+     *  summary="Logout user from session [user]",
      *  tags={"Auth"},
      *  security = {{"bearer":{}}},
      *  @OA\Response(response="200", description="success", @OA\JsonContent(example={

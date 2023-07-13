@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 class MessageService
 {
     /**
-     * Realiza uma push notification/sms para o usuário que recebe a transação
+     * Create a new sms transaction message (send new one)
      *
      * @param string $transactionPublicId
      * @return array
@@ -32,7 +32,7 @@ class MessageService
     }
 
     /**
-     * Captura o endpoint de envio de mensagem
+     * Get message api endpoint to request
      *
      * @return string
      */

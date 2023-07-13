@@ -17,30 +17,34 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        User::factory(2)->sequence(
+        User::factory(3)->sequence(
             [
-                'document_number' => '11122233344',
+                'document_number' => '11122233300',
                 'password' => Hash::make('mypass'), 
                 'type' => TypeEnum::PESSOA_FISICA
             ],
             [
-                'document_number' => '11222333000144',
+                'document_number' => '11122233301',
+                'password' => Hash::make('mypass'), 
+                'type' => TypeEnum::PESSOA_FISICA
+            ],
+            [
+                'document_number' => '11222333000101',
                 'password' => Hash::make('mypass'),
                 'type' => TypeEnum::PESSOA_JURIDICA
             ]
         )->create();
+        
+        $roles = [
+            [RoleEnum::ADMIN],
+            [RoleEnum::USER, RoleEnum::USER_PF],
+            [RoleEnum::USER, RoleEnum::USER_PJ],
+        ];
 
         $users = User::get();
 
-        foreach ($users as $user) {
-            switch ($user->type) {
-                case TypeEnum::PESSOA_FISICA:
-                    $user->assignRole([RoleEnum::USER, RoleEnum::USER_PF]);
-                    break;
-                case TypeEnum::PESSOA_JURIDICA:
-                    $user->assignRole([RoleEnum::USER, RoleEnum::USER_PJ]);
-                    break;
-            }
+        foreach ($users as $key => $user) {
+            $user->assignRole($roles[$key]);
         }
     }
 }

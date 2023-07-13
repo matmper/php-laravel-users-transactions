@@ -54,12 +54,6 @@ class TransactionService implements Transaction
      */
     public $message;
     
-    /**
-     * Public construct
-     *
-     * @param WalletService $walletService
-     * @param UserService $userService
-     */
     public function __construct(
         protected WalletService $walletService,
         protected UserService $userService,
@@ -132,7 +126,7 @@ class TransactionService implements Transaction
     {
         $this->balance = $this->walletService->getBalance($this->payer->id);
 
-        if ($this->balance < $this->amount) {
+        if ($this->balance < $this->amount) { 
             throw new InsufficienteBalanceException;
         }
     }
@@ -179,7 +173,7 @@ class TransactionService implements Transaction
         DB::beginTransaction();
 
         try {
-            $this->transaction = $this->transactionRepository->insert([
+            $this->transaction = $this->transactionRepository->create([
                 'public_id' => \Illuminate\Support\Str::uuid()->toString(),
                 'payer_id' => $this->payer->public_id,
                 'payee_id' => $this->payee->public_id,
@@ -190,7 +184,7 @@ class TransactionService implements Transaction
                 throw new \Exception('error to store transaction and create row', Response::HTTP_INTERNAL_SERVER_ERROR);
             }
 
-            $payerWallet = $this->walletService->insert([
+            $payerWallet = $this->walletService->create([
                 'amount' => -$this->amount,
                 'user_id' => $this->payer->id,
                 'name' => 'transação entre usuários',
@@ -201,7 +195,7 @@ class TransactionService implements Transaction
                 throw new \Exception('error to store payer wallet', Response::HTTP_INTERNAL_SERVER_ERROR);
             }
 
-            $payeeWallet = $this->walletService->insert([
+            $payeeWallet = $this->walletService->create([
                 'amount' => $this->amount,
                 'user_id' => $this->payee->id,
                 'name' => 'recebimento de transação',

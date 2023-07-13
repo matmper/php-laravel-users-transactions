@@ -15,7 +15,7 @@ class TransactionTest extends TestCase
      */
     public function test_post_transaction_store(): void
     {
-        $payer = $this->auth();
+        $payer = $this->auth([], [RoleEnum::USER, RoleEnum::USER_PF]);
         $payee = User::factory()->cnpj()->create();
 
         $service = app(\App\Services\WalletService::class);

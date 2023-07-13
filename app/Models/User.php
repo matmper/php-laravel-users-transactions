@@ -89,7 +89,7 @@ class User extends UserAuthenticatable implements Authenticatable, JWTSubject
     }
 
     /**
-     * Retorna true se a pessoa for pessoa física
+     * Check if user type is "pessoa física"
      *
      * @return boolean
      */
@@ -99,12 +99,12 @@ class User extends UserAuthenticatable implements Authenticatable, JWTSubject
     }
 
     /**
-     * Retorna true se a pessoa for pessoa jurídica
+     * Check if user type is "pessoa jurídica"
      *
      * @return boolean
      */
     public function getIsPjAttribute(): bool
     {
-        return $this->type ===  TypeEnum::PESSOA_JURIDICA;
+        return $this->type === TypeEnum::PESSOA_JURIDICA;
     }
 }
