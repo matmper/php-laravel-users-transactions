@@ -16,7 +16,6 @@ jobs:
         env:
           MYSQL_DATABASE: userstransactions
           MYSQL_ROOT_PASSWORD: 'pass123'
-          MYSQL_ROOT_HOST: '%'
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3

@@ -55,7 +55,7 @@ trait CreatesApplication
     {
         $connection = config('database.default');
 
-        if ($connection !== 'mysql') {
+        if ($connection !== 'mysql' || config('app.env') !== 'local') {
             return;
         }
 
