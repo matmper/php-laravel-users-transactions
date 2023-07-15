@@ -60,10 +60,4 @@ jobs:
       run: composer phpcs
 
     - name: Run PHP Unit Tests suite
-      env:
-        DB_HOST: mysql
-        DB_PORT: 3306
-        DB_DATABASE: userstransactions
-        DB_USER: root
-        DB_PASSWORD: pass123
       run: composer tests
