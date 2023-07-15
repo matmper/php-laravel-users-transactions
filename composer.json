@@ -41,6 +41,15 @@
         "phpcbf": [
             "@php vendor/bin/phpcbf -d memory_limit=1024M"
         ],
+        "phpstan": [
+            "@php vendor/bin/phpstan analyse --memory-limit 512M"
+        ],
+        "swagger": [
+            "@php vendor/bin/openapi ./app -o ./docs/swagger.json"  
+        ],
+        "swagger-check": [
+            "@php vendor/bin/openapi ./app 1> /dev/null"  
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
@@ -55,7 +64,7 @@
             "@php artisan key:generate --ansi"
         ],
         "tests": [
-            "./vendor/bin/phpunit tests"
+            "@php vendor/bin/phpunit tests --stop-on-failure"
         ]
     },
     "extra": {

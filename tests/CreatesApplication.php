@@ -53,9 +53,7 @@ trait CreatesApplication
      */
     private function setConnection(): void
     {
-        $connection = config('database.default');
-
-        if ($connection !== 'mysql') {
+        if (empty(env('DB_DATABASE_TEST'))) {
             return;
         }
 

@@ -40,19 +40,19 @@ composer-update:
 	docker exec -it $(CONTAINER) composer update
 	
 tests:
-	docker exec -it $(CONTAINER) ./vendor/bin/phpunit tests --stop-on-failure
+	docker exec -it $(CONTAINER) composer tests
 	
 config-cache:
 	docker exec -it $(CONTAINER) php artisan config:cache
 	docker exec -it $(CONTAINER) php artisan cache:clear
 
 swagger:
-	docker exec -it $(CONTAINER) php ./vendor/bin/openapi ./app -o ./docs/swagger.json
+	docker exec -it $(CONTAINER) composer swagger
 
 code-check:
-	docker exec -it $(CONTAINER) php ./vendor/bin/openapi ./app 1> /dev/null
-	docker exec -it $(CONTAINER) php ./vendor/bin/phpstan analyse
-	docker exec -it $(CONTAINER) php ./vendor/bin/phpcs
+	docker exec -it $(CONTAINER) composer swagger-check
+	docker exec -it $(CONTAINER) composer phpstan
+	docker exec -it $(CONTAINER) composer phpcs
 
 phpcbf:
-	docker exec -it $(CONTAINER) php vendor/bin/phpcbf
+	docker exec -it $(CONTAINER) composer phpcbf

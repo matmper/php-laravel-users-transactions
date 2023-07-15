@@ -218,7 +218,7 @@ class BaseRepository
      * Eloquent model: update (row by primary key)
      *
      * @param integer $itemPrimaryKey
-     * @param array $data 
+     * @param array $data
      * @return Model|null
      */
     public function update(int $itemPrimaryKey, array $data): ?Model

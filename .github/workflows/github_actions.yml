@@ -8,36 +8,55 @@ on:
 
 jobs:
   laravel-tests:
-
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: userstransactions
+          MYSQL_ROOT_PASSWORD: 'pass123'
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
-    - uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+    - uses: actions/checkout@v2
       with:
-        php-version: '8.1'
-    - uses: actions/checkout@v3
-    - name: Copy .env
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-    - name: Install Dependencies
-      run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
-    - name: Generate application key
-      run: php artisan key:generate
-    - name: Generate jwt key
-      run: php artisan jwt:secret
-    - name: Directory Permissions
-      run: chmod -R 777 storage bootstrap/cache
-    - name: Validate php open ai
-      run: vendor/bin/openapi ./app 1> /dev/null
-    - name: Validate php stan
-      run: vendor/bin/phpstan analyse
-    - name: Validate php csn
-      run: vendor/bin/phpcs --standard=psr2 --colors app/
-    - name: Create Database
+        fetch-depth: 1
+
+    - name: Cache composer dependencies
+      uses: actions/cache@v2
+      with:
+        path: vendor
+        key: composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          composer-
+
+    - name: Install PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.2
+
+    - name: Install composer dependencies
       run: |
-        mkdir -p database
-        touch database/database.sqlite
-    - name: Execute tests (Unit and Feature tests) via PHPUnit
-      env:
-        DB_CONNECTION: sqlite
-        DB_DATABASE: database/database.sqlite
-      run: vendor/bin/phpunit
+        composer install --no-progress --no-interaction
+
+    - name: Prepare Laravel Application
+      run: |
+        cp .env.example .env
+        php artisan key:generate
+        php artisan jwt:secret -n
+        php artisan config:cache
+        php artisan cache:clear
+
+    - name: Run Swagger suit
+      run: composer swagger-check
+      
+    - name: Run PHPStan suit
+      run: composer phpstan
+
+    - name: Run PHP Code Sniffer suit
+      run: composer phpcs
+
+    - name: Run PHP Unit Tests suite
+      run: composer tests

@@ -232,6 +232,56 @@
                 ]
             }
         },
+        "/me": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Info about authenticated user [admin, user]",
+                "operationId": "9174a569ffd5f82da6d1982c9382d3ba",
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "content": {
+                            "application/json": {
+                                "schema": {},
+                                "example": {
+                                    "data": {
+                                        "id": 1,
+                                        "public_id": "4b0a8cf3-dbb0-43a1-9b99-a90056793ade",
+                                        "name": "User Name",
+                                        "email": "user@mail.com",
+                                        "document_number": "12345678900",
+                                        "type": "pf",
+                                        "created_at": "2023-07-04T05:58:15.000000Z",
+                                        "updated_at": "2023-07-04T05:58:15.000000Z",
+                                        "deleted_at": null
+                                    },
+                                    "meta": {
+                                        "balance": 1000
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer": []
+                    }
+                ]
+            }
+        },
         "/users/{id}": {
             "get": {
                 "tags": [
@@ -318,7 +368,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/UserStoreRequest"
+                                "$ref": "#/components/schemas/UserUpdateRequest"
                             }
                         }
                     }
@@ -346,56 +396,6 @@
                                             "admin",
                                             "user"
                                         ]
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/UnauthorizedResponse"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
-                    {
-                        "bearer": []
-                    }
-                ]
-            }
-        },
-        "/me": {
-            "get": {
-                "tags": [
-                    "User"
-                ],
-                "summary": "Info about authenticated user [admin, user]",
-                "operationId": "9174a569ffd5f82da6d1982c9382d3ba",
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "content": {
-                            "application/json": {
-                                "schema": {},
-                                "example": {
-                                    "data": {
-                                        "id": 1,
-                                        "public_id": "4b0a8cf3-dbb0-43a1-9b99-a90056793ade",
-                                        "name": "User Name",
-                                        "email": "user@mail.com",
-                                        "document_number": "12345678900",
-                                        "type": "pf",
-                                        "created_at": "2023-07-04T05:58:15.000000Z",
-                                        "updated_at": "2023-07-04T05:58:15.000000Z",
-                                        "deleted_at": null
-                                    },
-                                    "meta": {
-                                        "balance": 1000
                                     }
                                 }
                             }
@@ -497,7 +497,7 @@
                 },
                 "type": "object"
             },
-            "UserStoreRequest": {
+            "UserUpdateRequest": {
                 "required": [
                     "name",
                     "email",
@@ -534,9 +534,12 @@
             },
             "UnauthorizedResponse": {
                 "properties": {
-                    "error": {
-                        "type": "string",
-                        "example": "Unauthorized [Authenticate]"
+                    "errors": {
+                        "type": "array",
+                        "items": [],
+                        "example": [
+                            "Unauthorized [Authenticate]"
+                        ]
                     },
                     "meta": {
                         "type": "array",

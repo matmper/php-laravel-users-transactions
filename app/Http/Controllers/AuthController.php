@@ -113,10 +113,6 @@ class AuthController extends Controller
             'type' => $request->type
         ]);
 
-        if (empty($user)) {
-            throw new \Exception('error to create user', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
         $user->assignRole(RoleEnum::USER);
 
         switch ($user->type) {

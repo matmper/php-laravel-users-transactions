@@ -28,7 +28,7 @@ class ResponseResource extends JsonResource
     /**
      * @OA\Schema(
      *  schema="UnauthorizedResponse",
-     *  @OA\Property(property="errors", type="array", example={Unauthorized [Authenticate]}),
+     *  @OA\Property(property="errors", type="array", items={}, example={"Unauthorized [Authenticate]"}),
      *  @OA\Property(property="meta", type="array", @OA\Items(
      *      @OA\Property(
      *         property="code",
