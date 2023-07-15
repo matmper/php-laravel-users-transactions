@@ -4,6 +4,9 @@
     <a href="http://makeapullrequest.com">
         <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" alt="PRs Welcome">
     </a>
+    <a href="https://github.com/matmper/php-laravel-users-transactions/actions/workflows/github_actions.yml?query=branch%3Amain+event%3Apush">
+        <img src="https://github.com/github/docs/actions/workflows/main.yml/badge.svg?event=push" alt="License MIT">
+    </a>
     <a href="https://en.wikipedia.org/wiki/Proprietary_software">
         <img src="https://img.shields.io/badge/license-Proprietary-blue.svg?style=flat-square" alt="License MIT">
     </a>
