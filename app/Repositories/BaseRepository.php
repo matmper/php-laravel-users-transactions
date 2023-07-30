@@ -293,7 +293,7 @@ class BaseRepository
      * @param array|null $orderBy
      * @return Builder
      */
-    private function getBaseQuery(array $where, array $columns = ['id'], ?array $orderBy = []): Builder
+    private function getBaseQuery(array $where, array $columns = ['id'], array $orderBy = []): Builder
     {
         $query = $this->query()->select($columns);
 
@@ -316,28 +316,30 @@ class BaseRepository
      * @param Builder $query
      * @param array $where
      * @return Builder
+     * @throws Exception
      */
     private function scopeMakeWhere(Builder $query, array $where): Builder
     {
-        foreach ($where as $key => $value) {
+       foreach ($where as $key => $value) {
             $keyExplode = explode(' ', trim($key));
-            $condition = $keyExplode[1] ?? '=';
+            $column = array_shift($keyExplode);
+            $operator = !empty($keyExplode) ? strtoupper(implode(' ', $keyExplode)) : '=';
 
             // WHERE IN ['column' => [1,2]]
-            if ($condition === '=' && is_array($value)) {
-                $query->whereIn($keyExplode[0], $value);
+            if (in_array($operator, ['IN', '=']) && is_array($value)) {
+                $query->whereIn($column, $value);
             // WHERE NOT IN ['column !=' => [1,2]]
-            } elseif ($condition === '!=' && is_array($value)) {
-                $query->whereNotIn($keyExplode[0], $value);
+            } elseif (in_array($operator, ['NOT IN', '!=', '<>']) && is_array($value)) {
+                $query->whereNotIn($column, $value);
             // WHERE IS NULL ['column' => null]
-            } elseif ($condition === '=' && is_null($value)) {
-                $query->whereNull($keyExplode[0]);
+            } elseif (in_array($operator, ['IS NULL', '=']) && is_null($value)) {
+                $query->whereNull($column);
             // WHERE IS NOT NULL ['column !=' => null]
-            } elseif ($condition === '!=' && is_null($value)) {
-                $query->whereNotNull($keyExplode[0]);
+            } elseif (in_array($operator, ['IS NOT NULL', '!=', '<>']) && is_null($value)) {
+                $query->whereNotNull($column);
             // WHERE DEFAULT
             } else {
-                $query->where($keyExplode[0], $condition, $value);
+                $query->where($column, $operator, $value);
             }
         }
 
