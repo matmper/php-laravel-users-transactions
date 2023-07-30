@@ -12,7 +12,7 @@ class CreateRepository extends Command
      *
      * @var string
      */
-    protected $signature = 'repository:create {modelName}';
+    protected $signature = 'repository:create {model}';
 
     /**
      * The console command description.
@@ -21,7 +21,10 @@ class CreateRepository extends Command
      */
     protected $description = 'Create a new repository file';
 
-    private $modelName;
+    /** 
+     * @var string 
+     */
+    private $path;
 
     /**
      * Create a new command instance.
@@ -40,65 +43,76 @@ class CreateRepository extends Command
      */
     public function handle(): void
     {
-        $this->modelName = $this->argument('modelName');
+        $this->setPath();
 
-        if ($this->modelName === 'all') {
-            foreach (scandir('./app/Models/') as $modelName) {
-                $this->createFiles($modelName);
-                $this->info("- - - - - - - - - ");
-            }
-        } else {
-            $this->createFiles($this->modelName);
+        $argument = $this->argument('model');
+        $models = $argument === 'all' ? array_slice(scandir(app_path('Models')), 2) : [$argument];
+
+        foreach ($models as $model) {
+            $this->createFiles($model);
+            $this->newLine(1);
         }
 
-        $this->newLine(2);
-        $this->info("Tudo pronto, seus arquivos foram criado com sucesso!");
+        $this->alert("Well Done!)");
     }
 
-    private function createFiles($modelName)
+    /**
+     * Create a single repositoiry file
+     *
+     * @param string $model
+     * @return mixed
+     */
+    private function createFiles(string $model): mixed
     {
-        $modelName = str_replace(['/', '\\', '.php', 'php'], '', $modelName);
+        $model = str_replace(['/', '\\', '.php', 'php'], '', $model);
+        $file = $this->getRepositoryData($model);
 
-        $file = (array) $this->createRepository($modelName);
+        $this->comment("Creating {$file->fileName}");
 
-        if (!file_exists('./app/Models/'.$modelName.'.php')) {
-            $this->info("A model {$modelName} não existe");
-            return null;
+        if (!file_exists(app_path("Models/$model.php"))) {
+            return $this->error("{$model} does not exist in ./app/Models folder");
         }
 
-        $this->info("Criando o seu arquivo: {$file['fileName']}");
-        sleep(1);
-
-        $pathToFile = $file['filePath'] . $file['fileName'];
-
-        if (file_exists($pathToFile)) {
-            $this->info("O arquivo {$file["fileName"]} já existe");
-            return null;
-        } else {
-            if ($fileHandle = fopen($pathToFile, "a+")) {
-                fwrite($fileHandle, $file["content"]);
-                fclose($fileHandle);
-            } else {
-                $this->info("O arquivo {$file["fileName"]} não foi possível ser criado");
-                return null;
-            }
+        if (file_exists($pathToFile = $file->filePath . '/' . $file->fileName)) {
+            return $this->error("{$file->fileName} file already exists");
         }
 
-        unset($pathToFile);
-        unset($fileHandle);
+        if (empty($fileHandle = fopen($pathToFile, "a+"))) {
+            return $this->error("{$file->fileName} cannot be created successfully");
+        }
 
-        $this->info("O arquivo {$file["fileName"]} foi criado com sucesso");
-        sleep(0.5);
+        fwrite($fileHandle, $file->content);
+        fclose($fileHandle);
 
-        $this->newLine(1);
+        return $this->info("{$file->fileName} created successfully");
     }
 
-    private function createRepository($modelName): array
+    /**
+     * Create array data to create a new repository file
+     *
+     * @param string $model
+     * @return object
+     */
+    private function getRepositoryData(string $model): object
     {
-        return [
-            'fileName' => "{$modelName}Repository.php",
-            'filePath' => "app/Repositories/",
-            'content' => (new CreateRepositoryFile())($modelName),
+        return (object) [
+            'fileName' => "{$model}Repository.php",
+            'filePath' => $this->path,
+            'content' => (new CreateRepositoryFile())($model),
         ];
+    }
+
+    /**
+     * Check if repositories path exists, create and set it
+     *
+     * @return void
+     */
+    private function setPath(): void
+    {
+        $path = $this->hasArgument('path') ? $this->argument('path') : 'Repositories';
+        
+        if (!is_dir($this->path = app_path($path))) {
+            mkdir($this->path, 0755);
+        }
     }
 }
