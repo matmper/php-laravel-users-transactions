@@ -21,8 +21,8 @@ class CreateRepository extends Command
      */
     protected $description = 'Create a new repository file';
 
-    /** 
-     * @var string 
+    /**
+     * @var string
      */
     private $path;
 
@@ -53,16 +53,16 @@ class CreateRepository extends Command
             $this->newLine(1);
         }
 
-        $this->alert("Well Done!)");
+        $this->alert("Well Done!");
     }
 
     /**
      * Create a single repositoiry file
      *
      * @param string $model
-     * @return mixed
+     * @return void
      */
-    private function createFiles(string $model): mixed
+    private function createFiles(string $model): void
     {
         $model = str_replace(['/', '\\', '.php', 'php'], '', $model);
         $file = $this->getRepositoryData($model);
@@ -70,21 +70,24 @@ class CreateRepository extends Command
         $this->comment("Creating {$file->fileName}");
 
         if (!file_exists(app_path("Models/$model.php"))) {
-            return $this->error("{$model} does not exist in ./app/Models folder");
+            $this->error("{$model} does not exist in ./app/Models folder");
+            return;
         }
 
         if (file_exists($pathToFile = $file->filePath . '/' . $file->fileName)) {
-            return $this->error("{$file->fileName} file already exists");
+            $this->error("{$file->fileName} file already exists");
+            return;
         }
 
         if (empty($fileHandle = fopen($pathToFile, "a+"))) {
-            return $this->error("{$file->fileName} cannot be created successfully");
+            $this->error("{$file->fileName} cannot be created successfully");
+            return;
         }
 
         fwrite($fileHandle, $file->content);
         fclose($fileHandle);
 
-        return $this->info("{$file->fileName} created successfully");
+        $this->info("{$file->fileName} created successfully");
     }
 
     /**
@@ -109,9 +112,7 @@ class CreateRepository extends Command
      */
     private function setPath(): void
     {
-        $path = $this->hasArgument('path') ? $this->argument('path') : 'Repositories';
-        
-        if (!is_dir($this->path = app_path($path))) {
+        if (!is_dir($this->path = app_path('Repositories'))) {
             mkdir($this->path, 0755);
         }
     }

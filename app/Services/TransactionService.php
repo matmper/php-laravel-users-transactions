@@ -13,42 +13,42 @@ use Illuminate\Support\Facades\Gate;
 class TransactionService implements Transaction
 {
     /**
-     * Usuário que irá receber a transação
+     * Payee user collection
      *
-     * @var object
+     * @var User
      */
     private $payee;
 
     /**
-     * Dados do usuário que receberá a transação
+     * Payer user collection
      *
-     * @var object
+     * @var User
      */
     private $payer;
 
     /**
-     * Retorna em centavos o saldo inicial do usuário
+     * Payer user balance (cents, 100 = R$1,00)
      *
      * @var integer
      */
     private $balance;
 
     /**
-     * Retorna o valor da transação em centavos (100 = R$1,00)
+     * Transaction amount (cents, 100 = R$1,00)
      *
      * @var integer
      */
     private $amount;
 
     /**
-     * Retorna dados da transação realizada
+     * Transaction stored data
      *
      * @var object
      */
     public $transaction;
 
     /**
-     * Retorna dados da mensagem enviada (push)
+     * Message store data (push)
      *
      * @var object
      */
@@ -60,7 +60,6 @@ class TransactionService implements Transaction
         protected MessageService $messageService,
         protected TransactionRepository $transactionRepository
     ) {
-        // usuário da sessão envia transação
         $this->payer = auth()->user();
 
         $this->transaction = null;
@@ -68,7 +67,7 @@ class TransactionService implements Transaction
     }
 
     /**
-     * Realiza todo o serviço e validações de uma transação
+     * Init a new transaction
      *
      * @param string $payeeId
      * @return self
@@ -87,7 +86,7 @@ class TransactionService implements Transaction
     }
 
     /**
-     * Captura dados do usuário beneficiário (recebedor)
+     * Get payer user data and set into $this->payee
      *
      * @param string $payeeId uuid
      * @return void
@@ -98,7 +97,7 @@ class TransactionService implements Transaction
     }
 
     /**
-     * Valida usuário para qual está enviando a transação
+     * Validate if payer is different than payee
      *
      * @return void
      */
@@ -108,7 +107,7 @@ class TransactionService implements Transaction
     }
 
     /**
-     * Realiza validação do tipo de usuário na sessão (pf ou  pj)
+     * Check if user type can create a new transaction
      *
      * @return void
      */
@@ -118,7 +117,7 @@ class TransactionService implements Transaction
     }
 
     /**
-     * Realiza validação de saldo do usuário
+     * Validate payer user balance
      *
      * @return void
      */
@@ -132,7 +131,7 @@ class TransactionService implements Transaction
     }
 
     /**
-     * Realiza o envio de mensagens ao finalizar transação
+     * Process and store transaction
      *
      * @return self
      */
@@ -146,7 +145,7 @@ class TransactionService implements Transaction
     }
 
     /**
-     * Realiza vadalição da transação no Center Bank
+     * Authorize transaction request into main bank api
      *
      * @return void
      */
@@ -164,7 +163,7 @@ class TransactionService implements Transaction
     }
 
     /**
-     * Realiza a criação interna da transação, salvando dados no banco relacional
+     * Create a new transaction into database
      *
      * @return void
      */
@@ -214,7 +213,7 @@ class TransactionService implements Transaction
     }
 
     /**
-     * Define o que será considerado no retorno da variável $transaction
+     * Create transaction response data
      *
      * @return void
      */
@@ -229,7 +228,7 @@ class TransactionService implements Transaction
     }
 
     /**
-     * Realiza o envio de mensagens ao finalizar transação
+     * Create a new notification message
      *
      * @return self
      */
@@ -241,7 +240,7 @@ class TransactionService implements Transaction
     }
 
     /**
-     * Retorna o resultado em array
+     * Array response result
      *
      * @return object
      */
@@ -251,7 +250,7 @@ class TransactionService implements Transaction
     }
 
     /**
-     * Retorna o resultado em objeto
+     * Object response result
      *
      * @return object
      */

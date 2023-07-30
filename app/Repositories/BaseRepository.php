@@ -2,9 +2,11 @@
 
 namespace App\Repositories;
 
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class BaseRepository
 {
@@ -13,9 +15,38 @@ class BaseRepository
      */
     protected $model;
 
+    /**
+     * Use Eloquent withTrashed method
+     *
+     * @var boolean
+     */
+    private $withTrashed;
+
     public function __construct()
     {
+        $this->withTrashed = config('repository.default.with_trashed', false);
         $this->model = app($this->model);
+    }
+
+    /**
+     * Set to use withTrashed() Eloquent method
+     *
+     * @return self
+     */
+    public function withTrashed(): self
+    {
+        $this->withTrashed = true;
+        return $this;
+    }
+
+    /**
+     * Init a new model query builder
+     *
+     * @return Builder
+     */
+    public function query(): Builder
+    {
+        return $this->model->query();
     }
 
     /**
@@ -23,12 +54,11 @@ class BaseRepository
      *
      * @param integer $id
      * @param array $columns
-     * @param boolean $withTrashed
      * @return Model|null
      */
-    public function find(int $id, array $columns = ['id'], bool $withTrashed = false): ?Model
+    public function find(int $id, array $columns = ['id']): ?Model
     {
-        $query = $this->getBaseQuery([], $columns, [], $withTrashed);
+        $query = $this->getBaseQuery([], $columns, []);
         
         return $query->find($id);
     }
@@ -38,12 +68,12 @@ class BaseRepository
      *
      * @param integer $id
      * @param array $columns
-     * @param boolean $withTrashed
      * @return Model
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException<\Illuminate\Database\Eloquent\Model>
      */
-    public function findOrFail(int $id, array $columns = ['id'], bool $withTrashed = false): Model
+    public function findOrFail(int $id, array $columns = ['id']): Model
     {
-        $query = $this->getBaseQuery([], $columns, [], $withTrashed);
+        $query = $this->getBaseQuery([], $columns, []);
         
         return $query->findOrFail($id);
     }
@@ -54,38 +84,13 @@ class BaseRepository
      * @param array $where
      * @param array $columns
      * @param array $orderBy
-     * @param boolean $withTrashed
      * @return Model|null
      */
-    public function first(
-        array $where,
-        array $columns = ['id'],
-        array $orderBy = [],
-        bool $withTrashed = false
-    ): ?Model {
-        $query = $this->getBaseQuery($where, $columns, $orderBy, $withTrashed);
+    public function first(array $where, array $columns = ['id'], array $orderBy = []): ?Model
+    {
+        $query = $this->getBaseQuery($where, $columns, $orderBy);
         
         return $query->first();
-    }
-
-    /**
-     * Eloquent model: last
-     *
-     * @param array $where
-     * @param array $columns
-     * @param array $orderBy
-     * @param boolean $withTrashed
-     * @return Model|null
-     */
-    public function last(
-        array $where,
-        array $columns = ['id'],
-        array $orderBy = [],
-        bool $withTrashed = false
-    ): ?Model {
-        $query = $this->getBaseQuery($where, $columns, $orderBy, $withTrashed);
-        
-        return $query->latest()->first();
     }
 
     /**
@@ -94,16 +99,12 @@ class BaseRepository
      * @param array $where
      * @param array $columns
      * @param array $orderBy
-     * @param boolean $withTrashed
      * @return Model
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException<\Illuminate\Database\Eloquent\Model>
      */
-    public function firstOrFail(
-        array $where,
-        array $columns = ['id'],
-        array $orderBy = [],
-        bool $withTrashed = false
-    ): Model {
-        $query = $this->getBaseQuery($where, $columns, $orderBy, $withTrashed);
+    public function firstOrFail(array $where, array $columns = ['id'], array $orderBy = []): Model
+    {
+        $query = $this->getBaseQuery($where, $columns, $orderBy);
         
         return $query->firstOrFail();
     }
@@ -111,20 +112,18 @@ class BaseRepository
     /**
      * Eloquent model: get
      *
-     * @param string|array $where
+     * @param array $where
      * @param array $columns
      * @param array $orderBy
-     * @param boolean $withTrashed
      * @return Collection
      */
     public function get(
-        string|array $where,
+        array $where,
         array $columns = ['id'],
         array $orderBy = [],
-        bool $withTrashed = false,
         bool $baseQuery = false,
     ): Collection {
-        $query = $this->getBaseQuery($where, $columns, $orderBy, $withTrashed);
+        $query = $this->getBaseQuery($where, $columns, $orderBy);
 
         if ($baseQuery) {
             $query->toBase();
@@ -134,20 +133,36 @@ class BaseRepository
     }
 
     /**
+     * Eloquent model: paginate
+     *
+     * @param array $where
+     * @param array $columns
+     * @param array $orderBy
+     * @param int $limit
+     * @return LengthAwarePaginator
+     */
+    public function paginate(
+        array $where,
+        array $columns = ['id'],
+        array $orderBy = [],
+        int $limit = 0,
+    ): LengthAwarePaginator {
+        $limit = $limit > 0 ? $limit : config('repository.default.paginate', 25);
+        $query = $this->getBaseQuery($where, $columns, $orderBy);
+
+        return $query->paginate($limit);
+    }
+
+    /**
      * Eloquent model: count
      *
      * @param array $where
      * @param integer $limit (0 = No limit)
-     * @param boolean $withTrashed
      * @return integer
      */
-    public function count(array $where, int $limit = 0, bool $withTrashed = false): int
+    public function count(array $where): int
     {
-        $query = $this->getBaseQuery($where, ['id'], [], $withTrashed);
-
-        if (!empty($limit)) {
-            $query->limit($limit);
-        }
+        $query = $this->getBaseQuery($where, ['id'], []);
         
         return $query->count();
     }
@@ -157,14 +172,15 @@ class BaseRepository
      *
      * @param array $data
      * @return Model
+     * @throws Exception
      */
     public function create(array $data): Model
     {
         if (empty($data)) {
-            return null;
+            throw new Exception('Base Repository: Array `$data` cannot be empty');
         }
 
-        return $this->model->create($data);
+        return $this->query()->create($data);
     }
 
     /**
@@ -172,14 +188,15 @@ class BaseRepository
      *
      * @param array $data
      * @return boolean
+     * @throws Exception
      */
     public function insert(array $data): bool
     {
         if (empty($data)) {
-            return null;
+            throw new Exception('Base Repository: Array `$data` cannot be empty');
         }
 
-        return $this->model->insert($data);
+        return $this->query()->insert($data);
     }
 
     /**
@@ -188,14 +205,15 @@ class BaseRepository
      * @param array $where
      * @param array $fields
      * @return Model
+     * @throws Exception
      */
     public function firstOrCreate(array $where, array $fields = []): Model
     {
         if (empty($where)) {
-            return null;
+            throw new Exception('Base Repository: Array `$where` cannot be empty');
         }
         
-        return $this->model->firstOrCreate($where, $fields);
+        return $this->query()->firstOrCreate($where, $fields);
     }
 
     /**
@@ -204,14 +222,15 @@ class BaseRepository
      * @param array $where
      * @param array $fields
      * @return Model
+     * @throws Exception
      */
     public function updateOrCreate(array $where, array $fields = []): Model
     {
         if (empty($where)) {
-            return null;
+            throw new Exception('Base Repository: Array `$where` cannot be empty');
         }
         
-        return $this->model->updateOrCreate($where, $fields);
+        return $this->query()->updateOrCreate($where, $fields);
     }
 
     /**
@@ -219,23 +238,40 @@ class BaseRepository
      *
      * @param integer $itemPrimaryKey
      * @param array $data
-     * @return Model|null
+     * @return Model
+     * @throws Exception
      */
-    public function update(int $itemPrimaryKey, array $data): ?Model
+    public function update(int $itemPrimaryKey, array $data): Model
     {
         if (empty($data)) {
-            return null;
+            throw new Exception('Base Repository: Array `$data` cannot be empty');
         }
 
-        $collection = $this->model->find($itemPrimaryKey, ['*']);
-        
-        if (empty($collection)) {
-            return null;
+        $item = $this->findOrFail($itemPrimaryKey, ['*']);
+        return $this->updateCollection($item, $data);
+    }
+
+    /**
+     * Eloquent model: update save (collection)
+     *
+     * @param Model $item
+     * @param array $data
+     * @return Model
+     * @throws Exception
+     */
+    public function updateCollection(Model $item, array $data): Model
+    {
+        if (empty($data)) {
+            throw new Exception('Base Repository: Array `$data` cannot be empty');
         }
 
-        $collection->update($data);
+        foreach ($data as $key => $value) {
+            $item->{$key} = $value;
+        }
 
-        return $collection;
+        $item->save();
+
+        return $item;
     }
 
     /**
@@ -246,31 +282,20 @@ class BaseRepository
      */
     public function delete(int $itemPrimaryKey): bool
     {
-        $collection = $this->model->find($itemPrimaryKey, ['id']);
-        
-        if (empty($collection)) {
-            return false;
-        }
-
-        return $collection->delete();
+        return $this->query()->findOrFail($itemPrimaryKey, ['id'])->delete();
     }
 
     /**
      * Create base query builder
      *
-     * @param string|array $where
+     * @param array $where
      * @param array $columns
      * @param array|null $orderBy
-     * @param boolean $withTrashed
      * @return Builder
      */
-    private function getBaseQuery(
-        string|array $where,
-        array $columns = ['id'],
-        ?array $orderBy = [],
-        bool $withTrashed = false
-    ): Builder {
-        $query = $this->model->query()->select($columns);
+    private function getBaseQuery(array $where, array $columns = ['id'], ?array $orderBy = []): Builder
+    {
+        $query = $this->query()->select($columns);
 
         $query = $this->scopeMakeWhere($query, $where);
 
@@ -278,7 +303,7 @@ class BaseRepository
             $query->orderBy($key, $value);
         }
         
-        if ($withTrashed) {
+        if ($this->withTrashed) {
             $query->withTrashed();
         }
 
@@ -295,7 +320,7 @@ class BaseRepository
     private function scopeMakeWhere(Builder $query, array $where): Builder
     {
         foreach ($where as $key => $value) {
-            $keyExplode = explode(' ', $key);
+            $keyExplode = explode(' ', trim($key));
             $condition = $keyExplode[1] ?? '=';
 
             // WHERE IN ['column' => [1,2]]

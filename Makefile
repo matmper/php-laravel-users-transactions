@@ -40,7 +40,7 @@ composer-install:
 composer-update:
 	docker exec -it $(CONTAINER) composer update
 
-testss:
+composer-tests:
 	docker exec -it $(CONTAINER) composer tests
 
 config-cache:
