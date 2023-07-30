@@ -28,7 +28,7 @@ COPY . .
 
 RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html/storage
 
-RUN composer install
+# RUN composer install
 
 EXPOSE 9000
 
