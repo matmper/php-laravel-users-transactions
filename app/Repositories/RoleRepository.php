@@ -6,13 +6,13 @@
 
 namespace App\Repositories;
 
-use App\Models\Transaction;
 use Matmper\Repositories\BaseRepository;
+use App\Models\Role;
 
-final class TransactionRepository extends BaseRepository
+final class RoleRepository extends BaseRepository
 {
     /**
-     * @var Transaction
+     * @var Role
      */
-    protected $model = Transaction::class;
+    protected $model = Role::class;
 }

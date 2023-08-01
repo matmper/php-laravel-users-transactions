@@ -1,13 +1,18 @@
 <?php
 
+/**
+ * Created by github.com/matmper/laravel-repository-release
+ */
+
 namespace App\Repositories;
 
 use App\Models\Wallet;
+use Matmper\Repositories\BaseRepository;
 
-class WalletRepository extends BaseRepository
+final class WalletRepository extends BaseRepository
 {
     /**
-     * @var Model
+     * @var Wallet
      */
     protected $model = Wallet::class;
 
