@@ -53,10 +53,6 @@ trait CreatesApplication
      */
     private function setConnection(): void
     {
-        if (empty(env('DB_DATABASE_TEST'))) {
-            return;
-        }
-
         $databaseName = config('database.connections.mysql_test.database');
 
         DB::statement("CREATE DATABASE IF NOT EXISTS $databaseName");

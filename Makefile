@@ -4,6 +4,7 @@ CONTAINER=ut-php-8
 
 build: kill
 	docker-compose up --build -d
+	make composer-install
 	docker exec -it $(CONTAINER) php artisan key:generate
 	docker exec -it $(CONTAINER) php artisan jwt:secret -n
 	make config-cache
@@ -38,10 +39,10 @@ composer-install:
 
 composer-update:
 	docker exec -it $(CONTAINER) composer update
-	
-tests:
+
+composer-tests:
 	docker exec -it $(CONTAINER) composer tests
-	
+
 config-cache:
 	docker exec -it $(CONTAINER) php artisan config:cache
 	docker exec -it $(CONTAINER) php artisan cache:clear
@@ -56,3 +57,9 @@ code-check:
 
 phpcbf:
 	docker exec -it $(CONTAINER) composer phpcbf
+
+repository-create:
+	docker exec -it $(CONTAINER) php artisan repository:create $(model)
+
+model-create:
+	docker exec -it $(CONTAINER) php artisan code:models --table=$(table)

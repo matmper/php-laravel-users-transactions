@@ -9,6 +9,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.2",
         "laravel/sanctum": "^2.14.1",
+        "matmper/laravel-repository-release": "^1.0",
         "php-open-source-saver/jwt-auth": "^1.4",
         "spatie/laravel-permission": "^5.10"
     },
@@ -64,7 +65,7 @@
             "@php artisan key:generate --ansi"
         ],
         "tests": [
-            "@php vendor/bin/phpunit tests --stop-on-failure"
+            "@php vendor/bin/phpunit tests --do-not-cache-result --stop-on-failure"
         ]
     },
     "extra": {

@@ -37,20 +37,19 @@ $ make build
 ## Auth (development)
 In development envrioment we offer two tests accounts, one is a commum user and other one is a store.
 
+- Admin
+```json
+{"documentNumber": "11122233300", "password": "mypass"}
+```
+
 - User - PF (credits: R$49,50)
 ```json
-{
-    "documentNumber": "11122233301",
-    "password": "mypass"
-}
+{"documentNumber": "11122233301", "password": "mypass"}
 ```
 
 - Store - PJ (credits: R$1,50)
 ```json
-{
-    "documentNumber": "11222333000101",
-    "password": "mypass"
-}
+{"documentNumber": "11222333000101", "password": "mypass"}
 ```
 ---
 #### Routes
@@ -63,10 +62,8 @@ In development envrioment we offer two tests accounts, one is a commum user and 
 | Verb | Path | Action | Route Name | Desc |
 |--|--|--|--|--|
 | GET | /users | index | user.index | get all users |
-| GET | /users/create | create | user.create | view to create user |
 | POST | /users | store | user.store | save new user |
 | GET | /users/{id} | show | user.show | get and user |
-| GET | /users/{id}/edit | edit | user.edit | get user data to edit |
 | PATCH/PUT | /users/{id} | update | user.update | save new user data |
 | DELETE | /users/{id} | destroy | user.destroy | delete an user |
 
@@ -74,15 +71,15 @@ In development envrioment we offer two tests accounts, one is a commum user and 
 #### Create models
 - You can use [reliese/laravel](https://github.com/reliese/laravel) library to generate a new model
 - To generate this, use this command:
-    - ```docker-compose exec webapp php artisan code:models --table=yourtable```
+    - ```make table-create table=users```
 ---
 #### Create repositories
 - You can use this custom command to generate a new repository
-    - `docker-compose exec webapp php artisan repository:create {modelName}`
-    - `docker-compose exec webapp php artisan repository:create all`
+    - `make repository-create model=User`
+    - `make repository-create model=all`
 ---
 #### Tests - PHP Unit
-- Library: [PHP Unit 10](https://phpunit.de/getting-started/phpunit-10.html)
+- Library: [PHP Unit 9](https://phpunit.de/getting-started/phpunit-9.html)
 - Use this commands for run testes
     - `make tests`
 ---

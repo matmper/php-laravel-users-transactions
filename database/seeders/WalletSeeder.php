@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Enums\TypeEnum;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
@@ -17,14 +16,14 @@ class WalletSeeder extends Seeder
      */
     public function run()
     {
-        $userPf = User::select('id', 'public_id')->where('type', TypeEnum::PESSOA_FISICA)->firstOrFail();
+        $userPf = User::select('id', 'public_id')->where('public_id', '67dabd7d-f925-410e-8a62-d516e5f94c8b')->firstOrFail();
         $transactionPf = Transaction::factory()->create([
             'payer_id' => $userPf->public_id,
             'payee_id' => $userPf->public_id,
             'amount' => 4950,
         ]);
 
-        $userPj = User::select('id', 'public_id')->where('type', TypeEnum::PESSOA_JURIDICA)->firstOrFail();
+        $userPj = User::select('id', 'public_id')->where('public_id', '18a32084-26c2-41e4-afb7-b378bced6531')->firstOrFail();
         $transactionPj = Transaction::factory()->create([
             'payer_id' => $userPj->public_id,
             'payee_id' => $userPj->public_id,
